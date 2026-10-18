@@ -27,7 +27,7 @@
   --code-bg:#1d2620; --red:#f08a5d; color-scheme:dark }
 
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;margin:0;
   padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top, 0px);z-index:10;background:var(--bg)}
 .wrap{max-width:860px;margin:0 auto;padding-block:28px 80px}
@@ -93,12 +93,12 @@ pre .c{color:var(--muted)}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chips span{font-family:var(--mono);font-size:.76rem;padding:.2em .55em;border-radius:6px;background:var(--code-bg);border:1px solid var(--line)}
 .chain{list-style:none;margin:0;padding:0;display:grid;gap:0;counter-reset:ch}
-.chain li{position:relative;display:grid;grid-template-columns:30px 1fr;column-gap:10px;padding-bottom:14px;min-width:0}
-.chain li::before{counter-increment:ch;content:counter(ch);display:grid;place-items:center;width:24px;height:24px;border-radius:50%;font-family:var(--mono);font-size:.72rem;font-weight:600;background:var(--line);color:var(--ink);grid-row:span 2}
-.chain li::after{content:"";position:absolute;left:11px;top:26px;bottom:2px;width:2px;background:var(--line)}
+.chain li{position:relative;padding:0 0 14px 40px;min-width:0;overflow-wrap:anywhere}
+.chain li::before{counter-increment:ch;content:counter(ch);position:absolute;left:0;top:0;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;font-family:var(--mono);font-size:.72rem;font-weight:600;background:var(--line);color:var(--ink)}
+.chain li::after{content:"";position:absolute;left:11px;top:28px;bottom:4px;width:2px;background:var(--line)}
 .chain li:last-child::after{display:none}
-.chain li code{grid-column:2;font-weight:600;overflow-wrap:anywhere}
-.chain li span{grid-column:2;font-size:.88rem;color:var(--muted)}
+.chain li code{font-weight:600}
+.chain li span{display:block;font-size:.88rem;color:var(--muted);margin-top:2px}
 .box.old .chain li::before{background:var(--amber-soft);color:var(--amber)}
 .box.new .chain li::before{background:var(--green-soft);color:var(--green)}
 .take{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;font-size:1rem;font-weight:500;max-width:none}
@@ -113,9 +113,11 @@ details.more>summary:focus-visible{outline:2px solid var(--green);outline-offset
 .more-body{display:grid;gap:18px;padding:16px}
 .more-body .diagram,.more-body .table-wrap{background:var(--bg)}
 nav.rail a.active{background:var(--green);border-color:var(--green);color:var(--panel)}
-.tools{position:fixed;right:calc(14px + env(safe-area-inset-right, 0px));bottom:calc(14px + env(safe-area-inset-bottom, 0px));display:flex;gap:8px;z-index:6}
-.tools button{font:inherit;font-size:.82rem;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:.5em .9em;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.08)}
-.tools button:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.hero-tools{display:flex;flex-wrap:wrap;gap:8px}
+.hero-tools button{font:inherit;font-size:.85rem;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:.45em 1em;cursor:pointer}
+.hero-tools button:hover,.hero-tools button:focus-visible{border-color:var(--green);color:var(--green);outline:none}
+.to-top{position:fixed;right:calc(14px + env(safe-area-inset-right, 0px));bottom:calc(14px + env(safe-area-inset-bottom, 0px));z-index:6;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--green);font-size:1.1rem;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.to-top:focus-visible{outline:2px solid var(--green);outline-offset:2px}
 .foot{border-top:1px solid var(--line);margin-top:48px;padding-top:16px;color:var(--muted);font-size:.85rem}
 .filegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
 .fcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;gap:10px;min-width:0;align-content:start}
@@ -179,6 +181,22 @@ nav.rail a.active{background:var(--green);border-color:var(--green);color:var(--
 .sum-strip code{overflow-wrap:anywhere}
 .sum-foot{font-size:.85rem;color:var(--muted)}
 @media (prefers-reduced-motion:reduce){.sum-card{transition:none}.sum-card:hover{transform:none}}
+.wire-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.wire-col{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;gap:12px;align-content:start;min-width:0}
+.wire-col.old{border-top:3px solid var(--amber)}
+.wire-col.new{border-top:3px solid var(--green)}
+.wire-col .tag{justify-self:start}
+.wire{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.wire li{display:grid;gap:0;min-width:0}
+.w-node{border-radius:10px;padding:9px 12px;display:grid;gap:2px;min-width:0}
+.wire-col.old .w-node{background:var(--amber-soft)}
+.wire-col.new .w-node{background:var(--green-soft)}
+.w-node b{font-family:var(--mono);font-size:.8rem;overflow-wrap:anywhere}
+.w-node span{font-size:.86rem;color:var(--muted)}
+.w-edge{font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;padding:5px 0 5px 22px;position:relative;color:var(--muted)}
+.w-edge::before{content:"";position:absolute;left:12px;top:0;bottom:0;width:2px;background:var(--line)}
+.wire-col.old .w-edge{color:var(--amber)}
+.wire-col.new .w-edge{color:var(--green)}
 .note{border-left:3px solid var(--amber);background:var(--amber-soft);padding:12px 14px;border-radius:0 10px 10px 0;font-size:.93rem}
 .note b{color:var(--amber)}
 
@@ -208,7 +226,11 @@ html{scroll-behavior:smooth}
     <span><span class="tag new">new</span> nbe_flutter · Flutter 3.32.6 + SDUI</span>
     <span>Backend unchanged: same <code>/digx/v1</code> APIs</span>
   </div>
-  <p class="start"><b>New to Flutter?</b> Start with the <a href="#summary">Summary</a>, then read chapters 1, 2, 3, 6, 10 and 11 first. They cover most daily work. Chapters marked <b>Show details</b> are reference: open them when you need them.</p>
+  <div class="hero-tools">
+    <button type="button" id="btn-expand">Open all chapters</button>
+    <button type="button" id="btn-theme" aria-label="Switch light or dark theme">Light / dark</button>
+  </div>
+  <p class="start"><b>New to Flutter?</b> Start with the <a href="#summary">Summary</a>, then chapters 1, 2, 3, 6, 7, 11 and 12. They cover most daily work. Chapters marked <b>Show details</b> are reference: open them when you need them.</p>
 </header>
 
 <nav class="rail" aria-label="Chapters">
@@ -220,6 +242,7 @@ html{scroll-behavior:smooth}
     <li><a href="#flutter">Flutter &amp; Dart</a></li>
     <li><a href="#anatomy">Component anatomy</a></li>
     <li><a href="#files">Old files 1-by-1</a></li>
+    <li><a href="#wiring">Inside one screen</a></li>
     <li><a href="#folders">Folders</a></li>
     <li><a href="#startup">App start</a></li>
     <li><a href="#screen">Screen life</a></li>
@@ -300,8 +323,8 @@ html{scroll-behavior:smooth}
         <text x="380" y="275" text-anchor="middle" font-size="11" style="fill:var(--muted)">unchanged · Flexcube behind it</text>
         <line x1="170" y1="190" x2="290" y2="234" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar1)"/>
         <line x1="590" y1="190" x2="470" y2="234" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar1)"/>
-        <text x="200" y="222" font-size="11" style="fill:var(--muted)">same REST calls</text>
-        <text x="500" y="222" font-size="11" style="fill:var(--muted)">same REST calls</text>
+        <text x="214" y="222" font-size="11" text-anchor="end" style="fill:var(--muted)">same REST calls</text>
+        <text x="546" y="222" font-size="11" text-anchor="start" style="fill:var(--muted)">same REST calls</text>
       </svg>
     </div>
     <figcaption>Both channels call the same server with the same URLs, the same RSA + salt login and the same nonce headers. Your OBDX knowledge of APIs and payloads carries over 1:1.</figcaption>
@@ -587,10 +610,66 @@ html{scroll-behavior:smooth}
   </div>
 </section>
 
+
+<!-- ============ COMPONENT WIRING ============ -->
+<section id="wiring">
+  <div class="head">
+    <span class="eyebrow">Chapter 7</span>
+    <h2>Inside one screen: how the files connect</h2>
+    <p class="take"><span>In one line</span>Old: loader → html + css + js → hooks → model → baseService. New: route → one JSON → state, onLoad, layout, style, action, each handled by the engine.</p>
+    <p>Follow the arrows top to bottom. Each label says what the file above does to the file below.</p>
+  </div>
+  <div class="wire-cols">
+    <div class="wire-col old">
+      <span class="tag old">Old OBDX · one component folder</span>
+      <ol class="wire">
+        <li><div class="w-node"><b>Dashboard</b><span>Menu click runs <code>registerComponent</code> + <code>loadComponent('i-score-inquiry')</code>.</span></div><div class="w-edge">calls ↓</div></li>
+        <li><div class="w-node"><b>loader.js</b><span>RequireJS pulls in the 3 parts below and hands them to Knockout as one component.</span></div><div class="w-edge">requires ↓</div></li>
+        <li><div class="w-node"><b>i-score-inquiry.html</b><span>The template. JET tags + shared tags like <code>&lt;account-input task-code="PC_F_ISC"&gt;</code>.</span></div><div class="w-edge">bound by ↓</div></li>
+        <li><div class="w-node"><b>i-score-inquiry.scss → .css</b><span>Compiled to .css; <code>base-models/css</code> scopes it to this component only.</span></div><div class="w-edge">scoped by ↓</div></li>
+        <li><div class="w-node"><b>i-score-inquiry.js (viewModel)</b><span>The brain. Creates observables, loads labels with <code>ojL10n!</code> from nls, imports hooks.js and model.js.</span></div><div class="w-edge">imports ↓</div></li>
+        <li><div class="w-node"><b>hooks.js</b><span>Generated screens only: value-change hooks and API wrappers the viewModel calls.</span></div><div class="w-edge">delegates ↓</div></li>
+        <li><div class="w-node"><b>model.js</b><span>Defines each request: URL, version, params. Returns a jQuery Deferred.</span></div><div class="w-edge">calls ↓</div></li>
+        <li><div class="w-node"><b>baseService → OBDX</b><span>Adds nonce + <code>/digx/</code>, sends, returns JSON.</span></div><div class="w-edge">returns ↓</div></li>
+        <li><div class="w-node"><b>.html redraws</b><span>The viewModel writes the response into observables; Knockout updates the bound HTML. (<code>.json</code> is metadata, empty for most screens.)</span></div></li>
+      </ol>
+    </div>
+    <div class="wire-col new">
+      <span class="tag new">New Flutter · one JSON file</span>
+      <ol class="wire">
+        <li><div class="w-node"><b>Route</b><span><code>/sdui/iscore/iscore_inquiry</code> → <code>SDUIScreenLoader</code> (replaces loader.js).</span></div><div class="w-edge">loads ↓</div></li>
+        <li><div class="w-node"><b>iscore_inquiry.json</b><span>One file holds what html + js + model did. Found remote → cache → bundled.</span></div><div class="w-edge">checked by ↓</div></li>
+        <li><div class="w-node"><b>sdui_document_validator</b><span>Checks the JSON shape, then the engine reads each block.</span></div><div class="w-edge">splits into ↓</div></li>
+        <li><div class="w-node"><b>"state"</b><span>Starting values → <code>$state</code> (the old observables).</span></div><div class="w-edge">becomes ↓</div></li>
+        <li><div class="w-node"><b>"page.api.onLoad"</b><span>ApiService + interceptors → OBDX. Response → <code>$data.&lt;id&gt;</code> (the old model.js).</span></div><div class="w-edge">calls ↓</div></li>
+        <li><div class="w-node"><b>"layout"</b><span>Widget registry turns each <code>"type"</code> into a Flutter widget (the old .html).</span></div><div class="w-edge">drawn by ↓</div></li>
+        <li><div class="w-node"><b>"style" + text keys</b><span>Theme names from <code>apptheme.json</code> (old .scss); text from <code>en/ar.json</code> (old nls).</span></div><div class="w-edge">styled by ↓</div></li>
+        <li><div class="w-node"><b>"action" / "onChanged"</b><span>On tap or change: dispatcher → plugin (<code>api</code>, <code>navigate</code>, <code>setState</code>). Replaces viewModel handlers and hooks.js.</span></div><div class="w-edge">runs ↓</div></li>
+        <li><div class="w-node"><b>Widgets redraw</b><span>When <code>$state</code> or <code>$data</code> changes, Riverpod redraws only the widgets that use it.</span></div></li>
+      </ol>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Old file</th><th>Talks to</th><th>New place</th></tr></thead>
+      <tbody>
+        <tr><td><code>loader.js</code></td><td>RequireJS, Knockout</td><td>Route + <code>SDUIScreenLoader</code></td></tr>
+        <tr><td><code>.html</code></td><td>viewModel (bindings), shared tags</td><td><code>"layout"</code></td></tr>
+        <tr><td><code>.js</code> viewModel</td><td>nls, hooks.js, model.js, .html</td><td><code>"state"</code> + <code>"action"</code></td></tr>
+        <tr><td><code>hooks.js</code></td><td>viewModel, model.js</td><td><code>"onChanged"</code> / <code>"action"</code> on the field</td></tr>
+        <tr><td><code>model.js</code></td><td>baseService</td><td><code>"page.api.onLoad"</code> / <code>"api"</code></td></tr>
+        <tr><td><code>.scss</code></td><td>base-models/css</td><td><code>"style"</code> names → <code>apptheme.json</code></td></tr>
+        <tr><td><code>.json</code></td><td>framework (metadata)</td><td>The JSON file is the screen itself</td></tr>
+        <tr><td><code>nls</code></td><td>viewModel via <code>ojL10n!</code></td><td><code>en.json</code> / <code>ar.json</code> keys</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
 <!-- ============ FOLDERS ============ -->
 <section id="folders">
   <div class="head">
-    <span class="eyebrow">Chapter 7</span>
+    <span class="eyebrow">Chapter 8</span>
     <h2>The project folders</h2>
     <p class="take"><span>In one line</span>You work in sdui_assets/ (screens). lib/ is the engine you rarely touch.</p>
     <p>You will spend 90% of your time in <code>sdui_assets/</code>. Open <code>lib/</code> only to understand or extend the engine.</p>
@@ -646,7 +725,7 @@ html{scroll-behavior:smooth}
 <!-- ============ STARTUP ============ -->
 <section id="startup">
   <div class="head">
-    <span class="eyebrow">Chapter 8</span>
+    <span class="eyebrow">Chapter 9</span>
     <h2>What happens when the app opens</h2>
     <p class="take"><span>In one line</span>main.dart picks the environment, bootstrap.dart prepares everything, then the login screen opens.</p>
     <p>In OBDX, <code>index.html</code> loads <code>require-config.js</code>, then the framework, then the dashboard. In Flutter, it's <code>main.dart</code> → <code>bootstrap.dart</code>. These steps run in this exact order:</p>
@@ -671,7 +750,7 @@ html{scroll-behavior:smooth}
 <!-- ============ SCREEN LIFE ============ -->
 <section id="screen">
   <div class="head">
-    <span class="eyebrow">Chapter 9</span>
+    <span class="eyebrow">Chapter 10</span>
     <h2>The life of one screen, end to end</h2>
     <p class="take"><span>In one line</span>Route → find JSON → prepare data → draw widgets. A tap → action → API → state changes → redraw.</p>
     <p>This is the core of the whole app. Every SDUI screen, from accounts to transfers to iScore, goes through these same steps.</p>
@@ -732,7 +811,7 @@ html{scroll-behavior:smooth}
 
           <rect x="420" y="278" width="310" height="52" rx="9" stroke="currentColor" style="fill:var(--panel)"/>
           <text x="436" y="300" font-weight="600" fill="currentColor">ApiService → Dio interceptors</text>
-          <text x="436" y="318" font-size="11.5" style="fill:var(--muted)">nonce, cookie, 2FA, errors (ch. 15)</text>
+          <text x="436" y="318" font-size="11.5" style="fill:var(--muted)">nonce, cookie, 2FA, errors (ch. 16)</text>
 
           <rect x="420" y="358" width="310" height="52" rx="9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 4"/>
           <text x="436" y="380" font-weight="600" fill="currentColor">OBDX server</text>
@@ -766,7 +845,7 @@ html{scroll-behavior:smooth}
 <!-- ============ JSON FILE ============ -->
 <section id="json">
   <div class="head">
-    <span class="eyebrow">Chapter 10</span>
+    <span class="eyebrow">Chapter 11</span>
     <h2>Anatomy of a screen JSON file</h2>
     <p class="take"><span>In one line</span>Every screen file has the same 5 parts: id, state, page, actions, layout.</p>
     <p>Here's a shortened version of the iScore review screen. Every screen has the same top-level shape.</p>
@@ -806,15 +885,15 @@ html{scroll-behavior:smooth}
     <li><span><b><code>page.api.onLoad</code></b> runs when the screen opens. Each response is saved as <code>$data.&lt;id&gt;</code>, so this one becomes <code>$data.accountsData</code>. This replaces <code>model.js</code>.</span></li>
     <li><span><b>Labels are translation keys.</b> <code>"confirm"</code> is looked up in <code>en.json</code>/<code>ar.json</code>. Text starting with <code>$</code> is a value, not a key.</span></li>
     <li><span><b><code>action</code></b> says what a tap does. Here, an <code>api</code> action calls OBDX. Actions can chain through <code>onSuccess</code>, <code>composite</code> and <code>conditional</code>.</span></li>
-    <li><span><b>Expressions</b> like <code>$data.language</code> are filled in at run time (chapter 11).</span></li>
-    <li><span><b><code>layout</code></b> is the widget tree, nested like HTML. Every <code>"type"</code> must exist in the widget registry (chapter 13).</span></li>
+    <li><span><b>Expressions</b> like <code>$data.language</code> are filled in at run time (chapter 12).</span></li>
+    <li><span><b><code>layout</code></b> is the widget tree, nested like HTML. Every <code>"type"</code> must exist in the widget registry (chapter 14).</span></li>
   </ol>
 </section>
 
 <!-- ============ DATA ============ -->
 <section id="data">
   <div class="head">
-    <span class="eyebrow">Chapter 11</span>
+    <span class="eyebrow">Chapter 12</span>
     <h2>Where values live: <code>$state</code>, <code>$data</code> and friends</h2>
     <p class="take"><span>In one line</span>$state is what the user picks. $data is what the server returns or the last screen sent.</p>
     <p>Think of these as the observables of the old viewModel, with fixed names.</p>
@@ -840,7 +919,7 @@ html{scroll-behavior:smooth}
 <!-- ============ ACTIONS ============ -->
 <section id="actions">
   <div class="head">
-    <span class="eyebrow">Chapter 12</span>
+    <span class="eyebrow">Chapter 13</span>
     <h2>Actions: everything a tap can do</h2>
     <p class="take"><span>In one line</span>A tap runs an action by name: api, navigate, setState, openOverlay, conditional…</p>
     <p>Each action is a small Dart plugin in <code>lib/sdui_ws/action/plugins/</code>, registered at startup in <code>sdui_action_boot.dart</code>. You call it from JSON by its <code>type</code>.</p>
@@ -874,7 +953,7 @@ html{scroll-behavior:smooth}
 <!-- ============ SHARED ============ -->
 <section id="shared">
   <div class="head">
-    <span class="eyebrow">Chapter 13</span>
+    <span class="eyebrow">Chapter 14</span>
     <h2>Shared building blocks</h2>
     <p class="take"><span>In one line</span>Reuse comes from 150 widgets, a few shared screens, and copying proven flows.</p>
     <p>In OBDX you reused <code>framework/elements</code> like <code>account-input</code> and <code>page-section</code>. Here the reusable pieces come at three levels.</p>
@@ -939,7 +1018,7 @@ html{scroll-behavior:smooth}
 <!-- ============ STYLES ============ -->
 <section id="styles">
   <div class="head">
-    <span class="eyebrow">Chapter 14</span>
+    <span class="eyebrow">Chapter 15</span>
     <h2>Styles without CSS files</h2>
     <p class="take"><span>In one line</span>No CSS files. Use names like "primary" and "labelSmall" from one theme file.</p>
     <p>There are no per-screen stylesheets. Colors, type and spacing come from one file, <code>sdui_assets/common/theme/apptheme.json</code>, and screens refer to them by name.</p>
@@ -972,7 +1051,7 @@ html{scroll-behavior:smooth}
 <!-- ============ NETWORK ============ -->
 <section id="network">
   <div class="head">
-    <span class="eyebrow">Chapter 15</span>
+    <span class="eyebrow">Chapter 16</span>
     <h2>The road every API call travels</h2>
     <p class="take"><span>In one line</span>Every API call passes the same chain: whitelist, 2FA, cookies, nonce, errors.</p>
     <p>In OBDX, <code>baseService</code> added the nonce and handled errors. In Flutter, Dio passes each request through a chain of interceptors, in this order (from <code>core/network/dio_client.dart</code>):</p>
@@ -1011,7 +1090,7 @@ html{scroll-behavior:smooth}
 <!-- ============ NATIVE ============ -->
 <section id="native">
   <div class="head">
-    <span class="eyebrow">Chapter 16</span>
+    <span class="eyebrow">Chapter 17</span>
     <h2>The parts still written in plain Dart</h2>
     <p class="take"><span>In one line</span>Login logic and device security are plain Dart. Most other screens are JSON.</p>
     <p>Not everything is SDUI. Some screens and services are classic Flutter code in <code>lib/features/</code>, usually because they need device features or complex logic.</p>
@@ -1040,7 +1119,7 @@ html{scroll-behavior:smooth}
 <!-- ============ ADD A SCREEN ============ -->
 <section id="add">
   <div class="head">
-    <span class="eyebrow">Chapter 17</span>
+    <span class="eyebrow">Chapter 18</span>
     <h2>Adding a feature, start to finish</h2>
     <p class="take"><span>In one line</span>New feature = JSON screens + translations + one pubspec line. No Dart.</p>
     <p>Using iScore as the example. No Dart changes needed.</p>
@@ -1072,7 +1151,7 @@ html{scroll-behavior:smooth}
 <!-- ============ GLOSSARY ============ -->
 <section id="gloss">
   <div class="head">
-    <span class="eyebrow">Chapter 18</span>
+    <span class="eyebrow">Chapter 19</span>
     <h2>Glossary</h2>
     <p class="take"><span>In one line</span>Short meanings for the words you'll hear every day.</p>
   </div>
@@ -1099,11 +1178,7 @@ html{scroll-behavior:smooth}
 </section>
 <footer class="foot">Built from the nbe_flutter workspace (branch pre_prod) and the OBDX channel build PREPROD 13 Oct 2026. Both are internal NBE code: share this page inside the team only.</footer>
 </div>
-<div class="tools">
-  <button type="button" id="btn-expand">Open all</button>
-  <button type="button" id="btn-theme" aria-label="Switch light or dark theme">Theme</button>
-  <button type="button" id="btn-top" aria-label="Back to top">Top ↑</button>
-</div>
+<button type="button" id="btn-top" class="to-top" aria-label="Back to top" hidden>↑</button>
 
 
 <script>
@@ -1129,11 +1204,12 @@ html{scroll-behavior:smooth}
     var next=dark?'light':'dark'; root.setAttribute('data-theme',next);
     try{localStorage.setItem('guide-theme',next);}catch(e){}
   });
-  document.getElementById('btn-top').addEventListener('click',function(){window.scrollTo({top:0});});
+  var tt=document.getElementById('btn-top'); tt.addEventListener('click',function(){window.scrollTo({top:0});});
+  window.addEventListener('scroll',function(){tt.hidden=window.scrollY<700;},{passive:true});
   var ex=document.getElementById('btn-expand'), open=false;
   ex.addEventListener('click',function(){
     open=!open; document.querySelectorAll('details.more').forEach(function(d){d.open=open;});
-    ex.textContent=open?'Close all':'Open all';
+    ex.textContent=open?'Close all chapters':'Open all chapters';
   });
   var links={}; document.querySelectorAll('nav.rail a').forEach(function(a){links[a.getAttribute('href').slice(1)]=a;});
   document.querySelectorAll('nav.rail a, a.sum-card').forEach(function(a){a.addEventListener('click',function(){
