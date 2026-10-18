@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NBE Flutter Field Guide</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one reading column with a sticky chapter rail; diagrams break out to a wider measure. Old channel = amber, new Flutter = NBE green. */
+:root{
+  --bg:#f7f8f5; --panel:#ffffff; --ink:#1d2621; --muted:#5d6a62; --line:#dce3dd;
+  --green:#00643e; --green-soft:#e3efe8; --amber:#b86e00; --amber-soft:#fbefdc;
+  --code-bg:#eef2ee; --red:#b8430f;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111613; --panel:#18201b; --ink:#e4ebe6; --muted:#9aa89f; --line:#2a352e;
+  --green:#4fc28d; --green-soft:#16302a; --amber:#f0a947; --amber-soft:#33270f;
+  --code-bg:#1d2620; --red:#f08a5d; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#111613; --panel:#18201b; --ink:#e4ebe6; --muted:#9aa89f; --line:#2a352e;
+  --green:#4fc28d; --green-soft:#16302a; --amber:#f0a947; --amber-soft:#33270f;
+  --code-bg:#1d2620; --red:#f08a5d; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top, 0px);z-index:10;background:var(--bg)}
+.wrap{max-width:860px;margin:0 auto;padding-block:28px 80px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.15;margin:0}
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:clamp(1.45rem,3.4vw,1.9rem);font-weight:800;letter-spacing:-.01em}
+h3{font-size:1.1rem;font-weight:600}
+p{margin:0;max-width:68ch}
+a{color:var(--green)}
+code,.mono{font-family:var(--mono);font-size:.86em}
+code{background:var(--code-bg);padding:.1em .35em;border-radius:4px;overflow-wrap:anywhere}
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.start{font-size:.95rem;background:var(--green-soft);border-radius:10px;padding:10px 14px;max-width:none}
+.lede{font-size:1.1rem;color:var(--muted);max-width:62ch}
+.tag{display:inline-block;font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;padding:.15em .5em;border-radius:999px;text-transform:uppercase;font-weight:600}
+.tag.old{background:var(--amber-soft);color:var(--amber)}
+.tag.new{background:var(--green-soft);color:var(--green)}
+
+header.hero{display:grid;gap:14px;padding-block:8px 24px;border-bottom:1px solid var(--line)}
+.hero-meta{display:flex;flex-wrap:wrap;gap:8px 18px;color:var(--muted);font-size:.9rem}
+
+nav.rail{position:sticky;top:env(safe-area-inset-top, 0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);
+  margin-inline:-4px;padding-block:10px}
+nav.rail ul{list-style:none;margin:0;padding:0 4px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin}
+nav.rail a{display:block;white-space:nowrap;text-decoration:none;color:var(--ink);font-size:.85rem;padding:.35em .8em;border:1px solid var(--line);border-radius:999px;background:var(--panel)}
+nav.rail a:hover,nav.rail a:focus-visible{border-color:var(--green);color:var(--green);outline:none}
+
+section{display:grid;gap:18px;padding-block:44px 8px;scroll-margin-top:64px}
+section > .head{display:grid;gap:8px}
+
+figure{margin:0;display:grid;gap:10px}
+.diagram{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+.diagram svg{display:block;width:100%;height:auto;min-width:560px;color:var(--ink)}
+figcaption{font-size:.88rem;color:var(--muted);max-width:68ch}
+
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:540px}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--code-bg)}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:600}
+
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:8px;min-width:0;align-content:start}
+.box.old{border-top:3px solid var(--amber)}
+.box.new{border-top:3px solid var(--green)}
+.box ul{margin:0;padding-left:1.1em;display:grid;gap:4px}
+
+pre{margin:0;background:var(--code-bg);border-radius:10px;padding:14px;overflow-x:auto;font-family:var(--mono);font-size:.8rem;line-height:1.55}
+pre .k{color:var(--green);font-weight:600}
+pre .s{color:var(--amber)}
+pre .c{color:var(--muted)}
+.callouts{display:grid;gap:8px;counter-reset:c;margin:0;padding:0;list-style:none}
+.callouts li{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}
+.callouts li::before{counter-increment:c;content:counter(c);display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--green);color:var(--panel);font-family:var(--mono);font-size:.75rem;font-weight:600}
+.pin{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--green);color:var(--panel);font-size:.65rem;font-weight:700;vertical-align:1px;margin-left:4px}
+
+.steps{display:grid;gap:10px;counter-reset:s;list-style:none;margin:0;padding:0}
+.steps li{display:grid;grid-template-columns:34px 1fr;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.steps li::before{counter-increment:s;content:counter(s);font-family:var(--display);font-weight:800;font-size:1.4rem;color:var(--green);line-height:1.1}
+.steps b{display:block}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips span{font-family:var(--mono);font-size:.76rem;padding:.2em .55em;border-radius:6px;background:var(--code-bg);border:1px solid var(--line)}
+.chain{list-style:none;margin:0;padding:0;display:grid;gap:0;counter-reset:ch}
+.chain li{position:relative;display:grid;grid-template-columns:30px 1fr;column-gap:10px;padding-bottom:14px;min-width:0}
+.chain li::before{counter-increment:ch;content:counter(ch);display:grid;place-items:center;width:24px;height:24px;border-radius:50%;font-family:var(--mono);font-size:.72rem;font-weight:600;background:var(--line);color:var(--ink);grid-row:span 2}
+.chain li::after{content:"";position:absolute;left:11px;top:26px;bottom:2px;width:2px;background:var(--line)}
+.chain li:last-child::after{display:none}
+.chain li code{grid-column:2;font-weight:600;overflow-wrap:anywhere}
+.chain li span{grid-column:2;font-size:.88rem;color:var(--muted)}
+.box.old .chain li::before{background:var(--amber-soft);color:var(--amber)}
+.box.new .chain li::before{background:var(--green-soft);color:var(--green)}
+.take{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;font-size:1rem;font-weight:500;max-width:none}
+.take span{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--green);background:var(--green-soft);padding:.15em .5em;border-radius:999px}
+details.more{border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+details.more>summary{cursor:pointer;list-style:none;padding:12px 16px;font-weight:600;color:var(--green);display:flex;align-items:center;gap:8px}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::before{content:"+";display:grid;place-items:center;width:22px;height:22px;border-radius:6px;background:var(--green-soft);font-family:var(--mono)}
+details.more[open]>summary::before{content:"−"}
+details.more[open]>summary{border-bottom:1px solid var(--line)}
+details.more>summary:focus-visible{outline:2px solid var(--green);outline-offset:2px;border-radius:12px}
+.more-body{display:grid;gap:18px;padding:16px}
+.more-body .diagram,.more-body .table-wrap{background:var(--bg)}
+nav.rail a.active{background:var(--green);border-color:var(--green);color:var(--panel)}
+.tools{position:fixed;right:calc(14px + env(safe-area-inset-right, 0px));bottom:calc(14px + env(safe-area-inset-bottom, 0px));display:flex;gap:8px;z-index:6}
+.tools button{font:inherit;font-size:.82rem;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:.5em .9em;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.tools button:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.foot{border-top:1px solid var(--line);margin-top:48px;padding-top:16px;color:var(--muted);font-size:.85rem}
+.note{border-left:3px solid var(--amber);background:var(--amber-soft);padding:12px 14px;border-radius:0 10px 10px 0;font-size:.93rem}
+.note b{color:var(--amber)}
+
+.toggle{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--panel)}
+.toggle button{font:inherit;font-size:.85rem;border:0;background:transparent;color:var(--ink);padding:.4em 1em;cursor:pointer}
+.toggle button[aria-pressed="true"]{background:var(--green);color:var(--panel)}
+.toggle button:focus-visible{outline:2px solid var(--green);outline-offset:-2px}
+
+dl.gloss{display:grid;grid-template-columns:minmax(120px,190px) 1fr;gap:8px 16px;margin:0}
+dl.gloss dt{font-family:var(--mono);font-size:.85rem;font-weight:600;color:var(--green)}
+dl.gloss dd{margin:0;min-width:0}
+@media (max-width:560px){dl.gloss{grid-template-columns:1fr}dl.gloss dd{margin-bottom:8px}}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+</style>
+<style>html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+<div class="wrap">
+<header class="hero">
+  <span class="eyebrow">Alahly Net · OBDX → Flutter revamp</span>
+  <h1>How the new Flutter channel works, explained from the old one</h1>
+  <p class="lede">You already know the OBDX channel: every component is a folder of JS, model, HTML, CSS and nls. This guide walks the new app the same way, from app start to the bank server, and shows where each old piece went.</p>
+  <div class="hero-meta">
+    <span><span class="tag old">old</span> OBDX channel · Oracle JET + Knockout</span>
+    <span><span class="tag new">new</span> nbe_flutter · Flutter 3.32.6 + SDUI</span>
+    <span>Backend unchanged: same <code>/digx/v1</code> APIs</span>
+  </div>
+  <p class="start"><b>New to Flutter?</b> Read chapters 1, 2, 8 and 9 first. They cover most daily work. Chapters marked <b>Show details</b> are reference: open them when you need them.</p>
+</header>
+
+<nav class="rail" aria-label="Chapters">
+  <ul>
+    <li><a href="#big">Big picture</a></li>
+    <li><a href="#chain">Who talks to who</a></li>
+    <li><a href="#flutter">Flutter &amp; Dart</a></li>
+    <li><a href="#anatomy">Component anatomy</a></li>
+    <li><a href="#folders">Folders</a></li>
+    <li><a href="#startup">App start</a></li>
+    <li><a href="#screen">Screen life</a></li>
+    <li><a href="#json">JSON file</a></li>
+    <li><a href="#data">$state &amp; $data</a></li>
+    <li><a href="#actions">Actions</a></li>
+    <li><a href="#shared">Shared parts</a></li>
+    <li><a href="#styles">Styles</a></li>
+    <li><a href="#network">Network</a></li>
+    <li><a href="#native">Native Dart</a></li>
+    <li><a href="#add">Add a screen</a></li>
+    <li><a href="#gloss">Glossary</a></li>
+  </ul>
+</nav>
+
+<!-- ============ BIG PICTURE ============ -->
+<section id="big">
+  <div class="head">
+    <span class="eyebrow">Chapter 1</span>
+    <h2>Only the front end changed</h2>
+    <p class="take"><span>In one line</span>Same bank server, same APIs. Only the app in the customer's hand is rebuilt.</p>
+    <p>The bank server stays exactly the same: OBDX on WebLogic, Flexcube behind it, and NBE's custom <code>cz/…</code> services. What changes is the app the customer holds. The old one is web pages inside a Cordova shell. The new one is a real Flutter app that draws screens from JSON files.</p>
+  </div>
+  <figure>
+    <div class="diagram">
+      <svg viewBox="0 0 760 300" role="img" aria-label="Old and new front ends both call the same OBDX server; only the front end is replaced.">
+        <defs>
+          <marker id="ar1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker>
+        </defs>
+        <!-- old column -->
+        <rect x="20" y="20" width="300" height="170" rx="12" fill="none" stroke-width="2" style="stroke:var(--amber)"/>
+        <text x="36" y="46" font-size="13" font-weight="600" style="font-family:var(--mono);fill:var(--amber)">OLD · OBDX CHANNEL</text>
+        <rect x="40" y="60" width="260" height="34" rx="8" style="fill:var(--amber-soft)"/>
+        <text x="170" y="82" text-anchor="middle" font-size="13" fill="currentColor">Cordova app / browser</text>
+        <rect x="40" y="102" width="260" height="34" rx="8" style="fill:var(--amber-soft)"/>
+        <text x="170" y="124" text-anchor="middle" font-size="13" fill="currentColor">Oracle JET + Knockout + RequireJS</text>
+        <rect x="40" y="144" width="260" height="34" rx="8" style="fill:var(--amber-soft)"/>
+        <text x="170" y="166" text-anchor="middle" font-size="13" fill="currentColor">1,703 components + 577 NBE overrides</text>
+        <!-- new column -->
+        <rect x="440" y="20" width="300" height="170" rx="12" fill="none" stroke-width="2" style="stroke:var(--green)"/>
+        <text x="456" y="46" font-size="13" font-weight="600" style="font-family:var(--mono);fill:var(--green)">NEW · FLUTTER CHANNEL</text>
+        <rect x="460" y="60" width="260" height="34" rx="8" style="fill:var(--green-soft)"/>
+        <text x="590" y="82" text-anchor="middle" font-size="13" fill="currentColor">Native Android · iOS · Web</text>
+        <rect x="460" y="102" width="260" height="34" rx="8" style="fill:var(--green-soft)"/>
+        <text x="590" y="124" text-anchor="middle" font-size="13" fill="currentColor">Dart engine (lib/sdui_ws)</text>
+        <rect x="460" y="144" width="260" height="34" rx="8" style="fill:var(--green-soft)"/>
+        <text x="590" y="166" text-anchor="middle" font-size="13" fill="currentColor">330 JSON screens (sdui_assets)</text>
+        <!-- server -->
+        <rect x="200" y="236" width="360" height="48" rx="10" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <text x="380" y="258" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">OBDX server · /digx/v1/…  +  cz/… services</text>
+        <text x="380" y="275" text-anchor="middle" font-size="11" style="fill:var(--muted)">unchanged · Flexcube behind it</text>
+        <line x1="170" y1="190" x2="290" y2="234" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar1)"/>
+        <line x1="590" y1="190" x2="470" y2="234" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar1)"/>
+        <text x="200" y="222" font-size="11" style="fill:var(--muted)">same REST calls</text>
+        <text x="500" y="222" font-size="11" style="fill:var(--muted)">same REST calls</text>
+      </svg>
+    </div>
+    <figcaption>Both channels call the same server with the same URLs, the same RSA + salt login and the same nonce headers. Your OBDX knowledge of APIs and payloads carries over 1:1.</figcaption>
+  </figure>
+</section>
+
+<!-- ============ WHO TALKS TO WHO ============ -->
+<section id="chain">
+  <div class="head">
+    <span class="eyebrow">Chapter 2</span>
+    <h2>Who talks to who: one journey, file by file</h2>
+    <p class="take"><span>In one line</span>Old: every screen has its own JS + model + HTML. New: one shared engine reads one JSON file per screen.</p>
+    <p>The same customer journey, opening I-Score inquiry and confirming it, traced through the real files in order. Read down each column: each file calls the next one.</p>
+  </div>
+  <div class="cols">
+    <div class="box old">
+      <span class="tag old">old OBDX</span>
+      <ol class="chain">
+        <li><code>index.html</code><span>loads RequireJS and <code>require-config.js</code></span></li>
+        <li><code>framework/js/configurations/require-config.js</code><span>maps module names, starts <code>platform</code></span></li>
+        <li><code>framework/js/base-models/</code><span><code>baseModel</code>, <code>baseService</code>, <code>platform</code>: login, session, locale</span></li>
+        <li>Dashboard (<code>view-model/generic-view-model.js</code>)<span>shows the menu; a click calls <code>registerComponent</code> + <code>loadComponent</code></span></li>
+        <li><code>i-score-inquiry/loader.js</code><span>pulls in the template, viewModel and CSS</span></li>
+        <li><code>i-score-inquiry.js</code> + <code>.html</code><span>viewModel creates observables; HTML binds to them</span></li>
+        <li><code>model.js</code><span>defines the call: <code>genericListOfValues</code>, <code>accessPoints</code></span></li>
+        <li><code>service-base.js</code> (baseService)<span>adds nonce + <code>/digx/</code> prefix, sends the request</span></li>
+        <li>OBDX server<span>returns JSON → observables update → HTML redraws</span></li>
+        <li><code>review-i-score-inquiry.js</code> → its <code>model.js</code><span><code>POST cz/iscore</code> → <code>confirm-screen</code> component</span></li>
+      </ol>
+    </div>
+    <div class="box new">
+      <span class="tag new">new Flutter</span>
+      <ol class="chain">
+        <li><code>lib/main.dart</code><span>picks the flavor (dev/sit/uat/prod)</span></li>
+        <li><code>lib/bootstrap.dart</code><span>security check, Hive, Firebase, registers actions, <code>runApp</code></span></li>
+        <li><code>lib/app.dart</code> + <code>core/routing/app_router.dart</code><span>GoRouter shows login, then home</span></li>
+        <li><code>sdui_assets/mobile/apply/apply_main_screen.json</code><span>menu row: <code>navigate</code> to <code>/sdui/iscore/iscore_inquiry</code></span></li>
+        <li><code>sdui_ws/renderer/sdui_screen_loader.dart</code><span>adds <code>mobile/</code>, asks for the screen</span></li>
+        <li><code>sdui_ws/core/sdui_repository.dart</code><span>reads <code>iscore_inquiry.json</code> (remote → cache → bundled)</span></li>
+        <li><code>sdui_ws/core/sdui_screen_orchestrator.dart</code><span>sets <code>$state</code>, runs <code>page.api.onLoad</code></span></li>
+        <li><code>core/network/api_service.dart</code> + <code>dio_client.dart</code><span>interceptors add nonce, cookie, 2FA → OBDX</span></li>
+        <li><code>sdui_ws/core/sdui_widget_registry.dart</code><span>turns each JSON <code>"type"</code> into a widget on screen</span></li>
+        <li>Tap Confirm in <code>iscore_review.json</code><span><code>action/core/sdui_action_dispatcher.dart</code> → <code>plugins/network/api_action.dart</code> → <code>POST cz/iscore</code> → <code>navigate</code> to <code>iscore_success.json</code></span></li>
+      </ol>
+    </div>
+  </div>
+  <div class="note"><b>The one idea to keep:</b> in OBDX, each component carries its own JS, model and HTML. In Flutter, steps 5 to 9 are the same shared engine for every screen. Only the JSON file in step 6 changes from feature to feature.</div>
+</section>
+
+<!-- ============ FLUTTER & DART ============ -->
+<section id="flutter">
+  <div class="head">
+    <span class="eyebrow">Chapter 3</span>
+    <h2>Flutter and Dart in five minutes</h2>
+    <p class="take"><span>In one line</span>Dart is the language, Flutter draws the screens, and SDUI means screens are written as JSON.</p>
+  </div>
+  <div class="cols">
+    <div class="box"><h3>Dart</h3><p>The programming language. Looks like Java/TypeScript. Files end in <code>.dart</code>. It plays the role JavaScript played in the old channel.</p></div>
+    <div class="box"><h3>Flutter</h3><p>Google's UI framework written in Dart. One codebase builds Android, iOS and Web. It plays the role of Oracle JET.</p></div>
+    <div class="box"><h3>Widget</h3><p>Everything on screen is a widget: <code>Text</code>, <code>Row</code>, <code>Column</code>, <code>Button</code>. Widgets nest inside each other like HTML tags. A widget is like a JET <code>oj-*</code> element.</p></div>
+    <div class="box"><h3>Riverpod</h3><p>Holds app state and shares it between screens (the "providers"). Plays the role of Knockout observables plus <code>baseModel</code>.</p></div>
+    <div class="box"><h3>GoRouter</h3><p>Navigation by URL path, like <code>/accounts</code> or <code>/sdui/iscore/iscore_inquiry</code>. Replaces <code>dashboard.loadComponent</code>.</p></div>
+    <div class="box"><h3>Dio</h3><p>The HTTP client. Plays the role of <code>baseService.fetch / add</code>, with interceptors for nonce, cookies, 2FA and errors.</p></div>
+  </div>
+  <div class="note"><b>The big twist: SDUI.</b> In a normal Flutter app, every screen is a Dart file. This team built a <b>Server-Driven UI</b> engine instead: screens are JSON files, and Dart code reads the JSON and builds the widgets. So most of your daily work is JSON, not Dart.</div>
+</section>
+
+<!-- ============ ANATOMY ============ -->
+<section id="anatomy">
+  <div class="head">
+    <span class="eyebrow">Chapter 4</span>
+    <h2>Where each old file went</h2>
+    <p class="take"><span>In one line</span>html + js + model + scss + nls become one JSON file plus shared theme and translation files.</p>
+    <p>An OBDX component is a folder of 6–7 files. In the new app, one JSON file holds the layout, the logic and the API calls together. The shared engine does the work each component used to repeat.</p>
+  </div>
+  <figure>
+    <div class="diagram">
+      <svg viewBox="0 0 760 400" role="img" aria-label="Each OBDX component file maps to a part of one SDUI JSON file or to a shared engine piece.">
+        <defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+        <text x="20" y="22" font-size="12" font-weight="600" style="font-family:var(--mono);fill:var(--amber)">OLD · components/iscore/i-score-inquiry/</text>
+        <text x="440" y="22" font-size="12" font-weight="600" style="font-family:var(--mono);fill:var(--green)">NEW · sdui_assets/mobile/iscore/</text>
+        <g font-size="12.5" style="font-family:var(--mono)">
+          <rect x="20" y="40" width="260" height="34" rx="7" style="fill:var(--amber-soft)"/><text x="34" y="62" fill="currentColor">i-score-inquiry.html</text>
+          <rect x="20" y="84" width="260" height="34" rx="7" style="fill:var(--amber-soft)"/><text x="34" y="106" fill="currentColor">i-score-inquiry.js  (viewModel)</text>
+          <rect x="20" y="128" width="260" height="34" rx="7" style="fill:var(--amber-soft)"/><text x="34" y="150" fill="currentColor">model.js  (baseService)</text>
+          <rect x="20" y="172" width="260" height="34" rx="7" style="fill:var(--amber-soft)"/><text x="34" y="194" fill="currentColor">i-score-inquiry.scss / .css</text>
+          <rect x="20" y="216" width="260" height="34" rx="7" style="fill:var(--amber-soft)"/><text x="34" y="238" fill="currentColor">nls/i-score-inquiry.js</text>
+          <rect x="20" y="260" width="260" height="34" rx="7" style="fill:var(--amber-soft)"/><text x="34" y="282" fill="currentColor">loader.js</text>
+          <rect x="20" y="304" width="260" height="34" rx="7" style="fill:var(--amber-soft)"/><text x="34" y="326" fill="currentColor">hooks.js</text>
+          <rect x="20" y="348" width="260" height="34" rx="7" style="fill:var(--amber-soft)"/><text x="34" y="370" fill="currentColor">partials/help/*.html</text>
+
+          <rect x="440" y="40" width="300" height="122" rx="9" style="fill:var(--green-soft);stroke:var(--green)"/>
+          <text x="456" y="62" fill="currentColor" font-weight="600">iscore_inquiry.json</text>
+          <text x="456" y="86" style="fill:var(--muted)">"layout"   ← widgets tree</text>
+          <text x="456" y="108" style="fill:var(--muted)">"action"   ← what a tap does</text>
+          <text x="456" y="130" style="fill:var(--muted)">"page.api.onLoad" ← API calls</text>
+          <text x="456" y="152" style="fill:var(--muted)">"state"    ← observables</text>
+          <rect x="440" y="172" width="300" height="34" rx="7" style="fill:var(--green-soft)"/><text x="456" y="194" fill="currentColor">common/theme/apptheme.json</text>
+          <rect x="440" y="216" width="300" height="34" rx="7" style="fill:var(--green-soft)"/><text x="456" y="238" fill="currentColor">common/translations/en|ar.json</text>
+          <rect x="440" y="260" width="300" height="78" rx="7" style="fill:var(--green-soft)"/><text x="456" y="282" fill="currentColor">engine (no per-screen file):</text>
+          <text x="456" y="304" style="fill:var(--muted)">route + SDUIScreenLoader</text>
+          <text x="456" y="326" style="fill:var(--muted)">action plugins in lib/</text>
+          <rect x="440" y="348" width="300" height="34" rx="7" style="fill:var(--green-soft)"/><text x="456" y="370" fill="currentColor">sdui_assets/html/*_en|_ar.html</text>
+        </g>
+        <g stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#ar2)" opacity=".7">
+          <path d="M280,57 L436,82"/>
+          <path d="M280,101 L436,104"/>
+          <path d="M280,145 L436,126"/>
+          <path d="M280,189 L436,189"/>
+          <path d="M280,233 L436,233"/>
+          <path d="M280,277 L436,290"/>
+          <path d="M280,321 L436,314"/>
+          <path d="M280,365 L436,365"/>
+        </g>
+      </svg>
+    </div>
+    <figcaption>Seven-plus files per component become one JSON file plus shared resources. The theme, translations and HTML live once for the whole app, not inside each component.</figcaption>
+  </figure>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Job</th><th>Old OBDX</th><th>New Flutter</th></tr></thead>
+      <tbody>
+        <tr><td>Screen markup</td><td><code>.html</code> with <code>data-bind</code></td><td><code>"layout"</code> in the screen JSON</td></tr>
+        <tr><td>Screen logic</td><td><code>.js</code> viewModel, Knockout observables</td><td><code>"state"</code> + <code>"action"</code> blocks in JSON; Dart plugins do the work</td></tr>
+        <tr><td>API calls</td><td><code>model.js</code> → <code>baseService.fetch/add</code></td><td><code>"page.api.onLoad"</code> or an <code>"api"</code> action → <code>ApiService</code> (Dio)</td></tr>
+        <tr><td>Styling</td><td>per-component <code>.scss</code></td><td>Design tokens in <code>apptheme.json</code>; names like <code>"primary"</code>, <code>"labelSmall"</code></td></tr>
+        <tr><td>Labels</td><td><code>resources/nls/</code> + <code>nls/ar/</code></td><td><code>common/translations/en.json</code> + <code>ar.json</code> (1,029 keys)</td></tr>
+        <tr><td>Load / register</td><td><code>loader.js</code>, <code>registerComponent</code>, <code>loadComponent</code></td><td>GoRouter route → <code>SDUIScreenLoader(screenId)</code></td></tr>
+        <tr><td>Overrides</td><td><code>extensions/</code> + <code>extension.json</code></td><td>Not needed: you own every JSON file</td></tr>
+        <tr><td>Confirm screen</td><td>shared <code>confirm-screen</code> component</td><td>Own <code>*_success.json</code> per flow</td></tr>
+        <tr><td>Mobile wrapper</td><td>Cordova + <code>window.plugins</code></td><td>Flutter plugins: <code>local_auth</code>, <code>flutter_secure_storage</code>, <code>device_info_plus</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ FOLDERS ============ -->
+<section id="folders">
+  <div class="head">
+    <span class="eyebrow">Chapter 5</span>
+    <h2>The project folders</h2>
+    <p class="take"><span>In one line</span>You work in sdui_assets/ (screens). lib/ is the engine you rarely touch.</p>
+    <p>You will spend 90% of your time in <code>sdui_assets/</code>. Open <code>lib/</code> only to understand or extend the engine.</p>
+  </div>
+  <details class="more">
+  <summary>Show details</summary>
+  <div class="more-body">
+  <div class="cols">
+    <div class="box new">
+      <h3><code>sdui_assets/</code> · screens</h3>
+      <ul>
+        <li><code>mobile/</code> 173 screens (phones)</li>
+        <li><code>web/</code> 129 screens (desktop)</li>
+        <li><code>tablet/</code> optional; falls back to mobile</li>
+        <li><code>common/theme</code> colors, type, spacing</li>
+        <li><code>common/translations</code> en / ar</li>
+        <li><code>common/overlays</code> shared sheets</li>
+        <li><code>common/modules</code> mock API data</li>
+        <li><code>common/pdf_template</code> PDF layouts</li>
+        <li><code>html/</code> T&amp;C pages (en / ar)</li>
+      </ul>
+    </div>
+    <div class="box new">
+      <h3><code>lib/</code> · Dart code</h3>
+      <ul>
+        <li><code>main*.dart</code> one per flavor</li>
+        <li><code>bootstrap.dart</code> startup steps</li>
+        <li><code>sdui_ws/</code> the SDUI engine</li>
+        <li><code>core/network</code> Dio + interceptors</li>
+        <li><code>core/routing</code> GoRouter routes</li>
+        <li><code>core/theme</code>, <code>design_system</code></li>
+        <li><code>core/security</code>, <code>app_security</code></li>
+        <li><code>features/</code> native Dart screens</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>Platform &amp; config</h3>
+      <ul>
+        <li><code>pubspec.yaml</code> packages + asset folders</li>
+        <li><code>android/</code>, <code>ios/</code>, <code>web/</code></li>
+        <li><code>assets/</code> images, icons, fonts (Tajawal)</li>
+        <li><code>server-base.js</code> local web proxy</li>
+        <li><code>test/</code> unit tests</li>
+        <li><code>.fvmrc</code> pins Flutter 3.32.6</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note"><b>Rule to remember:</b> a new folder under <code>sdui_assets/</code> must be listed in <code>pubspec.yaml</code> under <code>flutter → assets</code>. Unlisted folders are invisible to the app. Listed folders that don't exist break the build.</div>
+  </div>
+  </details>
+</section>
+
+<!-- ============ STARTUP ============ -->
+<section id="startup">
+  <div class="head">
+    <span class="eyebrow">Chapter 6</span>
+    <h2>What happens when the app opens</h2>
+    <p class="take"><span>In one line</span>main.dart picks the environment, bootstrap.dart prepares everything, then the login screen opens.</p>
+    <p>In OBDX, <code>index.html</code> loads <code>require-config.js</code>, then the framework, then the dashboard. In Flutter, it's <code>main.dart</code> → <code>bootstrap.dart</code>. These steps run in this exact order:</p>
+  </div>
+  <details class="more">
+  <summary>Show details</summary>
+  <div class="more-body">
+  <ol class="steps">
+    <li><div><b>Pick the environment</b><code>main.dart</code> (dev), <code>main_sit.dart</code>, <code>main_uat.dart</code> or <code>main_prod.dart</code> calls <code>FlavorConfig.initialize()</code>: base URL, logging, security switches.</div></li>
+    <li><div><b>Security first</b>Starts the AES helper, prepares SSL pinning, and runs the root/jailbreak check. A compromised phone gets the block screen and stops here.</div></li>
+    <li><div><b>Open local storage</b>Hive boxes for cached screen JSON, HTML and schema versions; SharedPreferences; secure storage is wiped on first run.</div></li>
+    <li><div><b>Firebase</b>Analytics only (no push messaging in this app yet).</div></li>
+    <li><div><b>Prime the SDUI engine</b>Loads the asset list, registers all validation rules, and registers every action plugin into the <code>SduiActionDispatcher</code>.</div></li>
+    <li><div><b>Session</b>Mobile clears any old session (fresh login every launch). Web tries to resume the existing cookie session.</div></li>
+    <li><div><b>Pre-login permissions</b>Fetches which components are allowed before login (<code>me/components</code>).</div></li>
+    <li><div><b>Run the app</b><code>runApp(BankingApp)</code> → GoRouter shows the login screen, which is itself the SDUI file <code>mobile/auth/login.json</code>.</div></li>
+  </ol>
+  </div>
+  </details>
+</section>
+
+<!-- ============ SCREEN LIFE ============ -->
+<section id="screen">
+  <div class="head">
+    <span class="eyebrow">Chapter 7</span>
+    <h2>The life of one screen, end to end</h2>
+    <p class="take"><span>In one line</span>Route → find JSON → prepare data → draw widgets. A tap → action → API → state changes → redraw.</p>
+    <p>This is the core of the whole app. Every SDUI screen, from accounts to transfers to iScore, goes through these same steps.</p>
+  </div>
+  <details class="more">
+  <summary>Show details</summary>
+  <div class="more-body">
+  <figure>
+    <div class="diagram">
+      <svg viewBox="0 0 760 560" role="img" aria-label="A screen goes route, loader, repository, orchestrator, renderer; a tap goes action dispatcher, plugin, API service, OBDX, and the response updates state which redraws the screen.">
+        <defs><marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+        <g font-size="12.5">
+          <!-- left column: load -->
+          <text x="30" y="24" font-size="12" font-weight="600" style="font-family:var(--mono);fill:var(--green)">LOAD THE SCREEN</text>
+          <rect x="30" y="38" width="320" height="52" rx="9" stroke="currentColor" style="fill:var(--panel)"/>
+          <text x="46" y="60" font-weight="600" fill="currentColor">GoRouter</text>
+          <text x="46" y="78" font-size="11.5" style="fill:var(--muted);font-family:var(--mono)">/sdui/iscore/iscore_inquiry</text>
+
+          <rect x="30" y="118" width="320" height="52" rx="9" stroke="currentColor" style="fill:var(--panel)"/>
+          <text x="46" y="140" font-weight="600" fill="currentColor">SDUIScreenLoader</text>
+          <text x="46" y="158" font-size="11.5" style="fill:var(--muted)">adds mobile/ or web/ by screen width</text>
+
+          <rect x="30" y="198" width="320" height="86" rx="9" stroke="currentColor" style="fill:var(--panel)"/>
+          <text x="46" y="220" font-weight="600" fill="currentColor">SDUIRepository · finds the JSON</text>
+          <text x="46" y="240" font-size="11.5" style="fill:var(--muted)">① remote server (sduiRemotePath)</text>
+          <text x="46" y="257" font-size="11.5" style="fill:var(--muted)">② Hive cache on the phone</text>
+          <text x="46" y="274" font-size="11.5" style="fill:var(--muted)">③ bundled file in sdui_assets/</text>
+
+          <rect x="30" y="312" width="320" height="86" rx="9" stroke="currentColor" style="fill:var(--panel)"/>
+          <text x="46" y="334" font-weight="600" fill="currentColor">Orchestrator · prepares data</text>
+          <text x="46" y="354" font-size="11.5" style="fill:var(--muted)">reset $state to JSON defaults</text>
+          <text x="46" y="371" font-size="11.5" style="fill:var(--muted)">merge data sent by previous screen</text>
+          <text x="46" y="388" font-size="11.5" style="fill:var(--muted)">run page.api.onLoad calls in parallel</text>
+
+          <rect x="30" y="426" width="320" height="70" rx="9" style="fill:var(--green-soft);stroke:var(--green)"/>
+          <text x="46" y="448" font-weight="600" fill="currentColor">Renderer + widget registry</text>
+          <text x="46" y="466" font-size="11.5" style="fill:var(--muted)">"type":"Text" → Flutter Text widget</text>
+          <text x="46" y="483" font-size="11.5" style="fill:var(--muted)">$state / $data values filled in</text>
+
+          <line x1="190" y1="90" x2="190" y2="116" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar3)"/>
+          <line x1="190" y1="170" x2="190" y2="196" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar3)"/>
+          <line x1="190" y1="284" x2="190" y2="310" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar3)"/>
+          <line x1="190" y1="398" x2="190" y2="424" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar3)"/>
+
+          <!-- right column: tap -->
+          <text x="420" y="24" font-size="12" font-weight="600" style="font-family:var(--mono);fill:var(--amber)">USER TAPS A BUTTON</text>
+          <rect x="420" y="38" width="310" height="52" rx="9" stroke="currentColor" style="fill:var(--panel)"/>
+          <text x="436" y="60" font-weight="600" fill="currentColor">"action": { "type": "api", … }</text>
+          <text x="436" y="78" font-size="11.5" style="fill:var(--muted)">read from the tapped widget's JSON</text>
+
+          <rect x="420" y="118" width="310" height="52" rx="9" stroke="currentColor" style="fill:var(--panel)"/>
+          <text x="436" y="140" font-weight="600" fill="currentColor">SduiActionDispatcher</text>
+          <text x="436" y="158" font-size="11.5" style="fill:var(--muted)">finds the plugin registered for "api"</text>
+
+          <rect x="420" y="198" width="310" height="52" rx="9" stroke="currentColor" style="fill:var(--panel)"/>
+          <text x="436" y="220" font-weight="600" fill="currentColor">ApiAction plugin (Dart)</text>
+          <text x="436" y="238" font-size="11.5" style="fill:var(--muted)">resolves $state/$data in url + body</text>
+
+          <rect x="420" y="278" width="310" height="52" rx="9" stroke="currentColor" style="fill:var(--panel)"/>
+          <text x="436" y="300" font-weight="600" fill="currentColor">ApiService → Dio interceptors</text>
+          <text x="436" y="318" font-size="11.5" style="fill:var(--muted)">nonce, cookie, 2FA, errors (ch. 13)</text>
+
+          <rect x="420" y="358" width="310" height="52" rx="9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 4"/>
+          <text x="436" y="380" font-weight="600" fill="currentColor">OBDX server</text>
+          <text x="436" y="398" font-size="11.5" style="fill:var(--muted);font-family:var(--mono)">POST /digx/v1/cz/iscore</text>
+
+          <rect x="420" y="438" width="310" height="58" rx="9" stroke="currentColor" style="fill:var(--panel)"/>
+          <text x="436" y="460" font-weight="600" fill="currentColor">Response saved as $data.&lt;id&gt;</text>
+          <text x="436" y="478" font-size="11.5" style="fill:var(--muted)">then onSuccess runs (e.g. navigate)</text>
+
+          <line x1="575" y1="90" x2="575" y2="116" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar3)"/>
+          <line x1="575" y1="170" x2="575" y2="196" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar3)"/>
+          <line x1="575" y1="250" x2="575" y2="276" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar3)"/>
+          <line x1="575" y1="330" x2="575" y2="356" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar3)"/>
+          <line x1="575" y1="410" x2="575" y2="436" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar3)"/>
+
+          <!-- cross arrows -->
+          <path d="M350,446 C385,446 385,64 418,64" fill="none" stroke-width="1.6" marker-end="url(#ar3)" style="stroke:var(--amber)"/>
+          <text x="364" y="250" font-size="11" transform="rotate(-90 364 250)" style="fill:var(--amber)">tap</text>
+          <path d="M420,480 C390,520 260,530 190,500" fill="none" stroke-width="1.6" marker-end="url(#ar3)" style="stroke:var(--green)"/>
+          <text x="300" y="540" font-size="11" text-anchor="middle" style="fill:var(--green)">state changed → screen redraws itself</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption>Left: how JSON becomes a screen. Right: how a tap reaches the bank and comes back. When a value in <code>$state</code> or <code>$data</code> changes, Riverpod redraws only the widgets that use it, the way a Knockout observable updates its bindings.</figcaption>
+  </figure>
+  <div class="note"><b>Today the remote step (①) does nothing.</b> <code>sduiRemotePath</code> points to a developer PC, so the app quietly uses the bundled file (③). That means your edits to the JSON in the project are what you see. After any change, do a full restart, not hot reload.</div>
+  </div>
+  </details>
+</section>
+
+<!-- ============ JSON FILE ============ -->
+<section id="json">
+  <div class="head">
+    <span class="eyebrow">Chapter 8</span>
+    <h2>Anatomy of a screen JSON file</h2>
+    <p class="take"><span>In one line</span>Every screen file has the same 5 parts: id, state, page, actions, layout.</p>
+    <p>Here's a shortened version of the iScore review screen. Every screen has the same top-level shape.</p>
+  </div>
+<pre><code>{
+  <span class="k">"id"</span>: <span class="s">"mobile/iscore/iscore_review"</span>,  <span class="pin">1</span>
+  <span class="k">"version"</span>: 1,
+  <span class="k">"state"</span>: { <span class="s">"accepted"</span>: false },           <span class="pin">2</span>
+  <span class="k">"page"</span>: {                                    <span class="pin">3</span>
+    <span class="k">"type"</span>: <span class="s">"screen"</span>,                         <span class="c">// or "bottomSheet"</span>
+    <span class="k">"api"</span>: { <span class="k">"onLoad"</span>: [ { <span class="k">"id"</span>: <span class="s">"accountsData"</span>, <span class="k">"method"</span>: <span class="s">"GET"</span>,
+              <span class="k">"url"</span>: <span class="s">"/digx/v1/accounts/demandDeposit"</span> } ] },  <span class="pin">4</span>
+    <span class="k">"appBar"</span>: { <span class="k">"type"</span>: <span class="s">"AppBar"</span>, <span class="k">"title"</span>: { <span class="k">"type"</span>: <span class="s">"Text"</span>, <span class="k">"text"</span>: <span class="s">"review"</span> } },
+    <span class="k">"bottomNavigationBar"</span>: {
+      <span class="k">"type"</span>: <span class="s">"Button"</span>, <span class="k">"label"</span>: <span class="s">"confirm"</span>,          <span class="pin">5</span>
+      <span class="k">"action"</span>: {                                 <span class="pin">6</span>
+        <span class="k">"type"</span>: <span class="s">"api"</span>, <span class="k">"id"</span>: <span class="s">"iscoreRequest"</span>, <span class="k">"method"</span>: <span class="s">"POST"</span>,
+        <span class="k">"url"</span>: <span class="s">"/digx/v1/cz/iscore"</span>,
+        <span class="k">"body"</span>: { <span class="k">"language"</span>: <span class="s">"$data.language"</span> },      <span class="pin">7</span>
+        <span class="k">"onSuccess"</span>: { <span class="k">"type"</span>: <span class="s">"navigate"</span>,
+          <span class="k">"route"</span>: <span class="s">"/sdui/iscore/iscore_success"</span>,
+          <span class="k">"argument"</span>: { <span class="k">"ref"</span>: <span class="s">"$data.iscoreRequest.iscoreDTO.id"</span> } }
+      }
+    }
+  },
+  <span class="k">"layout"</span>: {                                  <span class="pin">8</span>
+    <span class="k">"type"</span>: <span class="s">"Column"</span>, <span class="k">"children"</span>: [
+      { <span class="k">"type"</span>: <span class="s">"Text"</span>, <span class="k">"text"</span>: <span class="s">"iscoreLanguage"</span> },
+      { <span class="k">"type"</span>: <span class="s">"Text"</span>, <span class="k">"text"</span>: <span class="s">"$data.languageDesc"</span> }
+    ]
+  }
+}</code></pre>
+  <ol class="callouts">
+    <li><span><b><code>id</code></b> must equal the file path without <code>.json</code>. The loader uses it to find the file.</span></li>
+    <li><span><b><code>state</code></b> holds the starting values for this screen's <code>$state</code>. Like declaring <code>ko.observable(false)</code> in a viewModel.</span></li>
+    <li><span><b><code>page</code></b> holds the screen frame: type, app bar, bottom bar, API calls. Bottom sheets use <code>"type": "bottomSheet"</code>.</span></li>
+    <li><span><b><code>page.api.onLoad</code></b> runs when the screen opens. Each response is saved as <code>$data.&lt;id&gt;</code>, so this one becomes <code>$data.accountsData</code>. This replaces <code>model.js</code>.</span></li>
+    <li><span><b>Labels are translation keys.</b> <code>"confirm"</code> is looked up in <code>en.json</code>/<code>ar.json</code>. Text starting with <code>$</code> is a value, not a key.</span></li>
+    <li><span><b><code>action</code></b> says what a tap does. Here, an <code>api</code> action calls OBDX. Actions can chain through <code>onSuccess</code>, <code>composite</code> and <code>conditional</code>.</span></li>
+    <li><span><b>Expressions</b> like <code>$data.language</code> are filled in at run time (chapter 9).</span></li>
+    <li><span><b><code>layout</code></b> is the widget tree, nested like HTML. Every <code>"type"</code> must exist in the widget registry (chapter 11).</span></li>
+  </ol>
+</section>
+
+<!-- ============ DATA ============ -->
+<section id="data">
+  <div class="head">
+    <span class="eyebrow">Chapter 9</span>
+    <h2>Where values live: <code>$state</code>, <code>$data</code> and friends</h2>
+    <p class="take"><span>In one line</span>$state is what the user picks. $data is what the server returns or the last screen sent.</p>
+    <p>Think of these as the observables of the old viewModel, with fixed names.</p>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Write this</th><th>It means</th><th>Old OBDX equivalent</th></tr></thead>
+      <tbody>
+        <tr><td><code>$state.x</code></td><td>What the user picked or typed on this screen. Changed by <code>setState</code>, inputs and dropdowns.</td><td><code>self.x = ko.observable()</code></td></tr>
+        <tr><td><code>$data.x</code></td><td>API responses (by their <code>id</code>) plus the <code>argument</code> sent by the previous screen.</td><td><code>params.rootModel</code> + model responses</td></tr>
+        <tr><td><code>$item</code>, <code>$index</code></td><td>The current row inside a <code>ListViewBuilder</code> or <code>ForEach</code>.</td><td><code>$data</code> inside <code>foreach</code> binding</td></tr>
+        <tr><td><code>$locale</code></td><td><code>en</code> or <code>ar</code>.</td><td><code>baseModel.getLocale()</code></td></tr>
+        <tr><td><code>$tokens.spacing.m</code></td><td>A design token value (16).</td><td>SCSS variable</td></tr>
+        <tr><td><code>$config.baseUrl</code></td><td>Values from <code>FlavorConfig</code>.</td><td><code>Configurations</code></td></tr>
+        <tr><td><code>${ … }</code></td><td>A full expression: <code>${$state.a == true &amp;&amp; $state.b != ''}</code></td><td>Knockout <code>pureComputed</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Useful helpers inside expressions: <code>.length</code>, <code>.first</code>, <code>.last</code>, <code>.find('field', value)</code>, <code>.anyMatch('field', value)</code>, <code>.formatCurrency</code>, <code>.toUpperCase</code>, <code>.substring</code>, and ternary <code>a ? b : c</code>.</p>
+  <div class="note"><b>Sheets share the parent's values.</b> A bottom sheet opened with <code>openOverlay</code> reads and writes the parent screen's <code>$state</code> and <code>$data</code>. That's how the account sheet sets <code>fromAccountDTO</code> and the form sees it right away.</div>
+</section>
+
+<!-- ============ ACTIONS ============ -->
+<section id="actions">
+  <div class="head">
+    <span class="eyebrow">Chapter 10</span>
+    <h2>Actions: everything a tap can do</h2>
+    <p class="take"><span>In one line</span>A tap runs an action by name: api, navigate, setState, openOverlay, conditional…</p>
+    <p>Each action is a small Dart plugin in <code>lib/sdui_ws/action/plugins/</code>, registered at startup in <code>sdui_action_boot.dart</code>. You call it from JSON by its <code>type</code>.</p>
+  </div>
+  <details class="more">
+  <summary>Show details</summary>
+  <div class="more-body">
+  <div class="cols">
+    <div class="box"><h3>Network</h3><div class="chips"><span>api</span><span>downloadFile</span></div><p>Call OBDX; download a PDF or file.</p></div>
+    <div class="box"><h3>Navigation</h3><div class="chips"><span>navigate</span><span>goBack</span><span>openUrl</span><span>openExternalApp</span></div><p>Move between screens. <code>argument</code> sends data to the next screen.</p></div>
+    <div class="box"><h3>Overlays</h3><div class="chips"><span>openOverlay</span><span>bottomSheet</span><span>closeSheet</span><span>dialog</span><span>showErrorDialog</span><span>showToast</span></div><p>Sheets, popups and messages.</p></div>
+    <div class="box"><h3>State</h3><div class="chips"><span>setState</span><span>toggleState</span><span>resetState</span><span>setData</span><span>addListItem</span><span>removeListItem</span><span>updateListItem</span></div><p>Change values on the screen.</p></div>
+    <div class="box"><h3>Logic</h3><div class="chips"><span>composite</span><span>conditional</span></div><p>Run several actions in order; branch with <code>when / then / else</code>.</p></div>
+    <div class="box"><h3>Data</h3><div class="chips"><span>aggregateData</span><span>groupData</span><span>batchFetch</span></div><p>Sum, group or fetch many lists. Often used in <code>postLoadActions</code>.</p></div>
+    <div class="box"><h3>Security &amp; system</h3><div class="chips"><span>submitChallenge</span><span>cancelChallenge</span><span>biometricLoginAction</span><span>logout</span><span>changeLocale</span><span>pdfReader</span></div><p>OTP challenge, biometrics, language, PDF viewer.</p></div>
+  </div>
+<pre><code><span class="c">// Run two actions, then close the sheet — the account sheet pattern</span>
+<span class="k">"action"</span>: { <span class="k">"type"</span>: <span class="s">"composite"</span>, <span class="k">"actions"</span>: [
+  { <span class="k">"type"</span>: <span class="s">"setState"</span>, <span class="k">"key"</span>: <span class="s">"fromAccountDTO"</span>, <span class="k">"value"</span>: <span class="s">"$item"</span> },
+  { <span class="k">"type"</span>: <span class="s">"closeSheet"</span> } ] }
+
+<span class="c">// Branch — the EGP-only rule</span>
+<span class="k">"action"</span>: { <span class="k">"type"</span>: <span class="s">"conditional"</span>,
+  <span class="k">"when"</span>: { <span class="k">"operator"</span>: <span class="s">"notEquals"</span>, <span class="k">"left"</span>: <span class="s">"$state.fromAccountDTO.currencyCode"</span>, <span class="k">"right"</span>: <span class="s">"EGP"</span> },
+  <span class="k">"then"</span>: [ { <span class="k">"type"</span>: <span class="s">"showErrorDialog"</span>, <span class="k">"message"</span>: <span class="s">"iscoreDebitAccountEgpOnly"</span> } ],
+  <span class="k">"else"</span>: [ { <span class="k">"type"</span>: <span class="s">"navigate"</span>, <span class="k">"route"</span>: <span class="s">"/sdui/iscore/iscore_review"</span> } ] }</code></pre>
+  </div>
+  </details>
+</section>
+
+<!-- ============ SHARED ============ -->
+<section id="shared">
+  <div class="head">
+    <span class="eyebrow">Chapter 11</span>
+    <h2>Shared building blocks</h2>
+    <p class="take"><span>In one line</span>Reuse comes from 150 widgets, a few shared screens, and copying proven flows.</p>
+    <p>In OBDX you reused <code>framework/elements</code> like <code>account-input</code> and <code>page-section</code>. Here the reusable pieces come at three levels.</p>
+  </div>
+  <details class="more">
+  <summary>Show details</summary>
+  <div class="more-body">
+  <div class="cols">
+    <div class="box new">
+      <h3>1 · Widgets (about 150)</h3>
+      <p>Registered in <code>sdui_widget_registry.dart</code>. Use them by <code>"type"</code>.</p>
+      <div class="chips"><span>Text</span><span>Row</span><span>Column</span><span>Container</span><span>Button</span><span>TextFormFieldComponent</span><span>DropdownComponent</span><span>DateFieldComponent</span><span>CurrencyAmountInput</span><span>OtpComponent</span><span>TermsAndConditions</span><span>SecureWebView</span><span>ListViewBuilder</span><span>ConditionalWidget</span><span>AccountCard</span><span>StatusTag</span><span>FilterComponent</span><span>PaginationListView</span><span>FileUploadComponent</span><span>MapComponent</span></div>
+    </div>
+    <div class="box new">
+      <h3>2 · Shared screens</h3>
+      <p>Whole JSON files reused by many flows:</p>
+      <ul>
+        <li><code>mobile/transfers/transfer_common_screens/</code> (confirm, success, select account, T&amp;C sheet)</li>
+        <li><code>common/overlays/</code> (platform-agnostic sheets and dialogs)</li>
+        <li><code>mobile/2fa/</code> (OTP challenge screens)</li>
+      </ul>
+    </div>
+    <div class="box new">
+      <h3>3 · Patterns to copy</h3>
+      <p>Not shared files, but repeated recipes:</p>
+      <ul>
+        <li>Form → review → success: <code>transfers/own_account/</code></li>
+        <li>Account picker sheet: <code>from_account_selection_sheet.json</code></li>
+        <li>T&amp;C checkbox + HTML sheet: <code>self_registration/terms_conditions_sheet.json</code></li>
+        <li>LOV dropdown: <code>atm_and_branch_filter_overlay.json</code></li>
+      </ul>
+    </div>
+  </div>
+  <div class="note"><b>Why T&amp;C and accounts aren't "one shared screen":</b> the checkbox widget and sheet layout are shared, but each service has its own legal text and its own account rules (task code, currency). So each flow keeps its own small sheet file that reuses the same widgets.</div>
+  </div>
+  </details>
+</section>
+
+<!-- ============ STYLES ============ -->
+<section id="styles">
+  <div class="head">
+    <span class="eyebrow">Chapter 12</span>
+    <h2>Styles without CSS files</h2>
+    <p class="take"><span>In one line</span>No CSS files. Use names like "primary" and "labelSmall" from one theme file.</p>
+    <p>There are no per-screen stylesheets. Colors, type and spacing come from one file, <code>sdui_assets/common/theme/apptheme.json</code>, and screens refer to them by name.</p>
+  </div>
+  <details class="more">
+  <summary>Show details</summary>
+  <div class="more-body">
+  <div class="cols">
+    <div class="box">
+      <h3>Colors by role</h3>
+      <div class="chips"><span>primary #00643E</span><span>secondary #F89C1C</span><span>background</span><span>on-background</span><span>surface</span><span>on-surface</span><span>outline</span><span>success</span><span>warning</span><span>error</span><span>information</span></div>
+      <p>Add opacity with a colon: <code>"onSurface:0.6"</code>, <code>"warning:0.1"</code>.</p>
+    </div>
+    <div class="box">
+      <h3>Typography names</h3>
+      <div class="chips"><span>headlineLarge 36</span><span>headlineSmall 28</span><span>titleSmall 16</span><span>bodySmall 14</span><span>labelLarge 20</span><span>labelMedium 16</span><span>labelSmall 14</span><span>caption 11</span></div>
+      <p>Font: Tajawal NBE Digital (400, 500, 800). Use <code>"style": {"typography": "labelSmall", "color": "primary"}</code>.</p>
+    </div>
+    <div class="box">
+      <h3>Spacing tokens</h3>
+      <div class="chips"><span>xxs 4</span><span>xs 8</span><span>s 12</span><span>m 16</span><span>l 20</span><span>xl 24</span><span>xxl 32</span></div>
+      <p>Write <code>"$tokens.spacing.m"</code> or a plain number. Breakpoints: tablet 768, desktop 1024.</p>
+    </div>
+  </div>
+  <p>The theme file holds a theme per customer segment: <code>nbe_light_green</code> for role <b>CLASSICX</b> and <code>nbe_light_platinum</code> for <b>PlatinumElite</b> (dark primary, gold accent). Screens written with role names like <code>"primary"</code> switch automatically.</p>
+  </div>
+  </details>
+</section>
+
+<!-- ============ NETWORK ============ -->
+<section id="network">
+  <div class="head">
+    <span class="eyebrow">Chapter 13</span>
+    <h2>The road every API call travels</h2>
+    <p class="take"><span>In one line</span>Every API call passes the same chain: whitelist, 2FA, cookies, nonce, errors.</p>
+    <p>In OBDX, <code>baseService</code> added the nonce and handled errors. In Flutter, Dio passes each request through a chain of interceptors, in this order (from <code>core/network/dio_client.dart</code>):</p>
+  </div>
+  <details class="more">
+  <summary>Show details</summary>
+  <div class="more-body">
+  <figure>
+    <div class="diagram">
+      <svg viewBox="0 0 760 210" role="img" aria-label="Each request passes URL whitelist, device headers, 2FA challenge, cookies, nonce, auth, logging, error and encryption interceptors before reaching OBDX.">
+        <defs><marker id="ar4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="10" y="30" width="78" height="56" rx="8" stroke="currentColor" style="fill:var(--panel)"/><text x="49" y="54" fill="currentColor" font-weight="600">Plugin</text><text x="49" y="72" style="fill:var(--muted)">api action</text>
+          <rect x="100" y="30" width="78" height="56" rx="8" style="fill:var(--green-soft)"/><text x="139" y="54" fill="currentColor" font-weight="600">Whitelist</text><text x="139" y="72" style="fill:var(--muted)">allowed hosts</text>
+          <rect x="190" y="30" width="78" height="56" rx="8" style="fill:var(--green-soft)"/><text x="229" y="54" fill="currentColor" font-weight="600">Device</text><text x="229" y="72" style="fill:var(--muted)">device id hdr</text>
+          <rect x="280" y="30" width="78" height="56" rx="8" style="fill:var(--green-soft)"/><text x="319" y="54" fill="currentColor" font-weight="600">Challenge</text><text x="319" y="72" style="fill:var(--muted)">OTP / 2FA</text>
+          <rect x="370" y="30" width="78" height="56" rx="8" style="fill:var(--green-soft)"/><text x="409" y="54" fill="currentColor" font-weight="600">Cookies</text><text x="409" y="72" style="fill:var(--muted)">JSESSIONID</text>
+          <rect x="460" y="30" width="78" height="56" rx="8" style="fill:var(--green-soft)"/><text x="499" y="54" fill="currentColor" font-weight="600">Nonce</text><text x="499" y="72" style="fill:var(--muted)">pool of 15</text>
+          <rect x="550" y="30" width="78" height="56" rx="8" style="fill:var(--green-soft)"/><text x="589" y="54" fill="currentColor" font-weight="600">Auth · Log</text><text x="589" y="72" style="fill:var(--muted)">Error · Encr.</text>
+          <rect x="650" y="30" width="100" height="56" rx="8" fill="none" stroke="currentColor" stroke-dasharray="5 4"/><text x="700" y="54" fill="currentColor" font-weight="600">OBDX</text><text x="700" y="72" style="fill:var(--muted)">/digx/v1</text>
+        </g>
+        <g stroke="currentColor" stroke-width="1.3" marker-end="url(#ar4)">
+          <line x1="88" y1="58" x2="98" y2="58"/><line x1="178" y1="58" x2="188" y2="58"/><line x1="268" y1="58" x2="278" y2="58"/>
+          <line x1="358" y1="58" x2="368" y2="58"/><line x1="448" y1="58" x2="458" y2="58"/><line x1="538" y1="58" x2="548" y2="58"/><line x1="628" y1="58" x2="648" y2="58"/>
+        </g>
+        <path d="M700,88 C700,150 400,160 49,150 L49,92" fill="none" stroke-width="1.5" marker-end="url(#ar4)" style="stroke:var(--green)"/>
+        <text x="380" y="176" font-size="11.5" text-anchor="middle" style="fill:var(--green)">response comes back the same way; errors become a dialog, 2FA opens the OTP screen</text>
+      </svg>
+    </div>
+    <figcaption>The whitelist blocks any host that isn't the flavor's <code>baseUrl</code>. The challenge interceptor is why OTP "just works" for any <code>api</code> action: you never write 2FA logic in JSON.</figcaption>
+  </figure>
+  </div>
+  </details>
+</section>
+
+<!-- ============ NATIVE ============ -->
+<section id="native">
+  <div class="head">
+    <span class="eyebrow">Chapter 14</span>
+    <h2>The parts still written in plain Dart</h2>
+    <p class="take"><span>In one line</span>Login logic and device security are plain Dart. Most other screens are JSON.</p>
+    <p>Not everything is SDUI. Some screens and services are classic Flutter code in <code>lib/features/</code>, usually because they need device features or complex logic.</p>
+  </div>
+  <details class="more">
+  <summary>Show details</summary>
+  <div class="more-body">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Area</th><th>Where</th><th>Why Dart</th></tr></thead>
+      <tbody>
+        <tr><td>Login logic</td><td><code>features/auth/presentation/controller/login_service.dart</code></td><td>RSA + salt encryption, <code>j_security_check</code>, nonce pool, biometrics, device binding</td></tr>
+        <tr><td>Login action handlers</td><td><code>login_screen_controller.dart</code></td><td><code>preMobileLogin</code>, <code>oaamLogin</code> custom actions (the screens are SDUI)</td></tr>
+        <tr><td>First-time login</td><td><code>first_time_login_screen_controller.dart</code></td><td>Force-change password, security image, phrases</td></tr>
+        <tr><td>Loans, CDs, self-registration</td><td><code>features/loans</code>, <code>certificates_and_deposits</code>, <code>self_registration</code></td><td>Thin Dart wrappers that load SDUI screens</td></tr>
+        <tr><td>Cards, payments, more</td><td><code>features/cards</code>, <code>payments</code>, <code>more</code></td><td>"Coming soon" placeholders today</td></tr>
+        <tr><td>Device security</td><td><code>app_security/</code></td><td>Jailbreak check, screenshot blocking, idle timeout</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Rule of thumb: <b>if a screen only shows data and calls APIs, it's JSON.</b> If it needs a new kind of device feature or a calculation no action supports, a developer adds a Dart plugin or widget once, and then every JSON screen can use it.</p>
+  </div>
+  </details>
+</section>
+
+<!-- ============ ADD A SCREEN ============ -->
+<section id="add">
+  <div class="head">
+    <span class="eyebrow">Chapter 15</span>
+    <h2>Adding a feature, start to finish</h2>
+    <p class="take"><span>In one line</span>New feature = JSON screens + translations + one pubspec line. No Dart.</p>
+    <p>Using iScore as the example. No Dart changes needed.</p>
+  </div>
+  <div class="toggle" role="group" aria-label="Compare">
+    <button type="button" id="t-new" aria-pressed="true">New Flutter way</button>
+    <button type="button" id="t-old" aria-pressed="false">Old OBDX way</button>
+  </div>
+  <ol class="steps" id="steps-new">
+    <li><div><b>Find the API contract</b>From the old <code>model.js</code>: URLs, methods, payload, response fields.</div></li>
+    <li><div><b>Copy a similar flow</b>Start from <code>transfers/own_account/</code> files for form → review → success.</div></li>
+    <li><div><b>Write the screens</b>Create <code>sdui_assets/mobile/iscore/*.json</code>; set each <code>id</code> to its path.</div></li>
+    <li><div><b>Add text</b>Translation keys in <code>en.json</code> + <code>ar.json</code>; T&amp;C HTML in <code>sdui_assets/html/</code>.</div></li>
+    <li><div><b>Register the folder</b>Add <code>- sdui_assets/mobile/iscore/</code> to <code>pubspec.yaml</code>.</div></li>
+    <li><div><b>Link from a menu</b><code>navigate</code> to <code>/sdui/iscore/iscore_inquiry</code>. The generic route needs no Dart.</div></li>
+    <li><div><b>Repeat for web</b>Same files under <code>sdui_assets/web/iscore/</code> with a desktop layout.</div></li>
+    <li><div><b>Run and test</b><code>flutter pub get</code> → full restart → test on SIT, in English and Arabic.</div></li>
+  </ol>
+  <ol class="steps" id="steps-old" hidden>
+    <li><div><b>Create the component folder</b><code>extensions/components/iscore/i-score-inquiry/</code>.</div></li>
+    <li><div><b>Write 6 files</b><code>loader.js</code>, viewModel <code>.js</code>, <code>model.js</code>, <code>.html</code>, <code>.scss</code>, <code>.json</code>.</div></li>
+    <li><div><b>Add labels</b><code>resources/nls/i-score-inquiry.js</code> and <code>nls/ar/</code>.</div></li>
+    <li><div><b>Register</b>List it in <code>extension.json</code>; map the task code in <code>task-component-mapping.js</code>.</div></li>
+    <li><div><b>Wire the menu</b>Add the menu entry and <code>registerComponent</code> calls for review and view.</div></li>
+    <li><div><b>Build and deploy</b>Rebuild the channel, deploy to the web server, rebuild the Cordova app for mobile.</div></li>
+  </ol>
+</section>
+
+<!-- ============ GLOSSARY ============ -->
+<section id="gloss">
+  <div class="head">
+    <span class="eyebrow">Chapter 16</span>
+    <h2>Glossary</h2>
+    <p class="take"><span>In one line</span>Short meanings for the words you'll hear every day.</p>
+  </div>
+  <details class="more">
+  <summary>Show details</summary>
+  <div class="more-body">
+  <dl class="gloss">
+    <dt>SDUI</dt><dd>Server-Driven UI. Screens are JSON files that a Dart engine turns into widgets. Today the JSON ships inside the app; later it can come from the server without an app update.</dd>
+    <dt>screenId</dt><dd>The JSON path without <code>.json</code>, e.g. <code>mobile/iscore/iscore_inquiry</code>.</dd>
+    <dt>Flavor</dt><dd>An environment build: dev, sit, uat, prod. Each has its own <code>main_*.dart</code> and settings in <code>flavor_config.dart</code>.</dd>
+    <dt>Widget registry</dt><dd>The list that maps a JSON <code>"type"</code> to Dart code that draws it.</dd>
+    <dt>Action plugin</dt><dd>Dart class that runs one action type (<code>api</code>, <code>navigate</code>…).</dd>
+    <dt>Orchestrator</dt><dd>Prepares a screen: resets state, merges incoming data, runs onLoad APIs.</dd>
+    <dt>Overlay</dt><dd>A bottom sheet or dialog. Shares its parent screen's state.</dd>
+    <dt>Provider</dt><dd>A Riverpod object that holds state; widgets that read it redraw when it changes.</dd>
+    <dt>Interceptor</dt><dd>A Dio hook that runs on every request/response (nonce, cookies, 2FA, errors).</dd>
+    <dt>Hive</dt><dd>Small local database on the phone; caches screen JSON and HTML.</dd>
+    <dt>pubspec.yaml</dt><dd>The project file: packages, fonts, asset folders. Like <code>package.json</code> plus the asset list.</dd>
+    <dt>Hot reload / restart</dt><dd>Reload keeps state and won't pick up new JSON; restart reloads everything. Use restart for SDUI changes.</dd>
+    <dt>fvm</dt><dd>Flutter Version Manager; <code>.fvmrc</code> pins this project to 3.32.6.</dd>
+  </dl>
+  </div>
+  </details>
+</section>
+<footer class="foot">Built from the nbe_flutter workspace (branch pre_prod) and the OBDX channel build PREPROD 13 Oct 2026. Both are internal NBE code: share this page inside the team only.</footer>
+</div>
+<div class="tools">
+  <button type="button" id="btn-expand">Open all</button>
+  <button type="button" id="btn-theme" aria-label="Switch light or dark theme">Theme</button>
+  <button type="button" id="btn-top" aria-label="Back to top">Top ↑</button>
+</div>
+
+
+<script>
+(function(){
+  var bNew=document.getElementById('t-new'), bOld=document.getElementById('t-old');
+  var sNew=document.getElementById('steps-new'), sOld=document.getElementById('steps-old');
+  function show(isNew){
+    sNew.hidden=!isNew; sOld.hidden=isNew;
+    bNew.setAttribute('aria-pressed', String(isNew));
+    bOld.setAttribute('aria-pressed', String(!isNew));
+  }
+  bNew.addEventListener('click', function(){show(true)});
+  bOld.addEventListener('click', function(){show(false)});
+})();
+
+(function(){
+  var root=document.documentElement;
+  var t=document.getElementById('btn-theme');
+  try{var saved=localStorage.getItem('guide-theme'); if(saved) root.setAttribute('data-theme',saved);}catch(e){}
+  t.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var dark=cur? cur==='dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var next=dark?'light':'dark'; root.setAttribute('data-theme',next);
+    try{localStorage.setItem('guide-theme',next);}catch(e){}
+  });
+  document.getElementById('btn-top').addEventListener('click',function(){window.scrollTo({top:0});});
+  var ex=document.getElementById('btn-expand'), open=false;
+  ex.addEventListener('click',function(){
+    open=!open; document.querySelectorAll('details.more').forEach(function(d){d.open=open;});
+    ex.textContent=open?'Close all':'Open all';
+  });
+  var links={}; document.querySelectorAll('nav.rail a').forEach(function(a){links[a.getAttribute('href').slice(1)]=a;});
+  document.querySelectorAll('nav.rail a').forEach(function(a){a.addEventListener('click',function(){
+    var sec=document.getElementById(a.getAttribute('href').slice(1)); var d=sec&&sec.querySelector('details.more'); if(d) d.open=true;});});
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){
+      if(e.isIntersecting){Object.values(links).forEach(function(l){l.classList.remove('active')});
+        var l=links[e.target.id]; if(l){l.classList.add('active'); var ul=l.closest('ul'); ul.scrollLeft=l.offsetLeft-ul.clientWidth/2+l.offsetWidth/2;}}});},
+      {rootMargin:'-30% 0px -60% 0px'});
+    document.querySelectorAll('section[id]').forEach(function(s){io.observe(s);});
+  }
+})();
+</script>
+
+</body>
+</html>
