@@ -169,6 +169,16 @@ nav.rail a.active{background:var(--green);border-color:var(--green);color:var(--
   .fc-new b::before{content:"NEW · ";color:var(--green)}
 }
 @media (prefers-reduced-motion:reduce){.fc-node,.fc-num{transition:none}.fc-row.active .fc-node{transform:none}}
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.sum-card{display:grid;gap:4px;align-content:start;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;transition:border-color .2s,transform .2s}
+.sum-card b{font-family:var(--display);font-size:1.02rem;font-weight:600}
+.sum-card span{font-size:.9rem;color:var(--muted)}
+.sum-card:hover,.sum-card:focus-visible{border-color:var(--green);transform:translateY(-1px);outline:none}
+.sum-strip{display:grid;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:.88rem}
+.sum-strip div{display:flex;flex-wrap:wrap;gap:6px;align-items:center;min-width:0}
+.sum-strip code{overflow-wrap:anywhere}
+.sum-foot{font-size:.85rem;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.sum-card{transition:none}.sum-card:hover{transform:none}}
 .note{border-left:3px solid var(--amber);background:var(--amber-soft);padding:12px 14px;border-radius:0 10px 10px 0;font-size:.93rem}
 .note b{color:var(--amber)}
 
@@ -198,11 +208,12 @@ html{scroll-behavior:smooth}
     <span><span class="tag new">new</span> nbe_flutter · Flutter 3.32.6 + SDUI</span>
     <span>Backend unchanged: same <code>/digx/v1</code> APIs</span>
   </div>
-  <p class="start"><b>New to Flutter?</b> Read chapters 1, 2, 3, 6, 10 and 11 first. They cover most daily work. Chapters marked <b>Show details</b> are reference: open them when you need them.</p>
+  <p class="start"><b>New to Flutter?</b> Start with the <a href="#summary">Summary</a>, then read chapters 1, 2, 3, 6, 10 and 11 first. They cover most daily work. Chapters marked <b>Show details</b> are reference: open them when you need them.</p>
 </header>
 
 <nav class="rail" aria-label="Chapters">
   <ul>
+    <li><a href="#summary">Summary</a></li>
     <li><a href="#big">Big picture</a></li>
     <li><a href="#chain">Who talks to who</a></li>
     <li><a href="#flowchart">Flowchart</a></li>
@@ -223,6 +234,33 @@ html{scroll-behavior:smooth}
     <li><a href="#gloss">Glossary</a></li>
   </ul>
 </nav>
+
+
+<!-- ============ SUMMARY ============ -->
+<section id="summary">
+  <div class="head">
+    <span class="eyebrow">Summary · 2-minute read</span>
+    <h2>The whole guide on one screen</h2>
+    <p class="take"><span>In one line</span>The bank server stays; the screens move from Oracle JET components to JSON files that one Flutter engine draws.</p>
+  </div>
+  <div class="sum-grid">
+      <a class="sum-card" href="#big"><b>Only the app changed</b><span>Same OBDX server, same <code>/digx/v1</code> APIs, same login. Your API knowledge carries over.</span></a>
+      <a class="sum-card" href="#flowchart"><b>Same 8 steps, new owner</b><span>Old: your component files do each step. New: one shared engine does it for every screen.</span></a>
+      <a class="sum-card" href="#anatomy"><b>One JSON = one screen</b><span>html + js + model + scss + nls become one JSON file plus shared theme and translations.</span></a>
+      <a class="sum-card" href="#json"><b>5 parts in every screen</b><span><code>id</code>, <code>state</code>, <code>page</code> (app bar, onLoad APIs), <code>action</code>, <code>layout</code>.</span></a>
+      <a class="sum-card" href="#data"><b>Two places for values</b><span><code>$state</code> = what the user picks. <code>$data</code> = server responses + what the last screen sent.</span></a>
+      <a class="sum-card" href="#actions"><b>Taps run named actions</b><span><code>api</code>, <code>navigate</code>, <code>setState</code>, <code>openOverlay</code>, <code>conditional</code>… each a shared Dart plugin.</span></a>
+      <a class="sum-card" href="#shared"><b>Reuse widgets and patterns</b><span><code>account-input</code> → accounts API with the same task code + a list sheet. <code>modal-window</code> → bottom-sheet JSON.</span></a>
+      <a class="sum-card" href="#styles"><b>No CSS files</b><span>Use theme names: <code>primary</code>, <code>labelSmall</code>, <code>$tokens.spacing.m</code>. One theme file for all.</span></a>
+      <a class="sum-card" href="#network"><b>Security is automatic</b><span>Interceptors add nonce, cookies and OTP to every call. Never rebuild that in JSON.</span></a>
+      <a class="sum-card" href="#add"><b>New feature, no Dart</b><span>JSON screens + en/ar keys + one <code>pubspec.yaml</code> line + a menu link. Full restart, then test on SIT.</span></a>
+  </div>
+  <div class="sum-strip">
+    <div><span class="tag old">old</span><code>loader.js</code> → <code>.js</code> + <code>hooks.js</code> → <code>model.js</code> → <code>baseService</code> → OBDX → Knockout redraws <code>.html</code></div>
+    <div><span class="tag new">new</span><code>route</code> → <code>screen.json</code> → <code>onLoad</code> / <code>action</code> → <code>ApiService</code> → OBDX → <code>$data</code> changes → widgets redraw</div>
+  </div>
+  <p class="sum-foot">Tap any card to jump to its chapter.</p>
+</section>
 
 <!-- ============ BIG PICTURE ============ -->
 <section id="big">
@@ -1098,7 +1136,7 @@ html{scroll-behavior:smooth}
     ex.textContent=open?'Close all':'Open all';
   });
   var links={}; document.querySelectorAll('nav.rail a').forEach(function(a){links[a.getAttribute('href').slice(1)]=a;});
-  document.querySelectorAll('nav.rail a').forEach(function(a){a.addEventListener('click',function(){
+  document.querySelectorAll('nav.rail a, a.sum-card').forEach(function(a){a.addEventListener('click',function(){
     var sec=document.getElementById(a.getAttribute('href').slice(1)); var d=sec&&sec.querySelector('details.more'); if(d) d.open=true;});});
   if('IntersectionObserver' in window){
     var io=new IntersectionObserver(function(es){es.forEach(function(e){
