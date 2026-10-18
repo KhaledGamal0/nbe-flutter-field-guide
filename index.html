@@ -230,7 +230,7 @@ html{scroll-behavior:smooth}
     <button type="button" id="btn-expand">Open all chapters</button>
     <button type="button" id="btn-theme" aria-label="Switch light or dark theme">Light / dark</button>
   </div>
-  <p class="start"><b>New to Flutter?</b> Start with the <a href="#summary">Summary</a>, then chapters 1, 2, 3, 6, 7, 11 and 12. They cover most daily work. Chapters marked <b>Show details</b> are reference: open them when you need them.</p>
+  <p class="start"><b>New to Flutter?</b> Start with the <a href="#summary">Summary</a>, then chapters 1, 2, 3, 6, 7, 11 and 12. Chapter 20 is your checklist for every new revamp. Chapters marked <b>Show details</b> are reference: open them when you need them.</p>
 </header>
 
 <nav class="rail" aria-label="Chapters">
@@ -255,6 +255,7 @@ html{scroll-behavior:smooth}
     <li><a href="#native">Native Dart</a></li>
     <li><a href="#add">Add a screen</a></li>
     <li><a href="#gloss">Glossary</a></li>
+    <li><a href="#revamp">Revamp checklist</a></li>
   </ul>
 </nav>
 
@@ -276,7 +277,9 @@ html{scroll-behavior:smooth}
       <a class="sum-card" href="#shared"><b>Reuse widgets and patterns</b><span><code>account-input</code> → accounts API with the same task code + a list sheet. <code>modal-window</code> → bottom-sheet JSON.</span></a>
       <a class="sum-card" href="#styles"><b>No CSS files</b><span>Use theme names: <code>primary</code>, <code>labelSmall</code>, <code>$tokens.spacing.m</code>. One theme file for all.</span></a>
       <a class="sum-card" href="#network"><b>Security is automatic</b><span>Interceptors add nonce, cookies and OTP to every call. Never rebuild that in JSON.</span></a>
-      <a class="sum-card" href="#add"><b>New feature, no Dart</b><span>JSON screens + en/ar keys + one <code>pubspec.yaml</code> line + a menu link. Full restart, then test on SIT.</span></a>
+      <a class="sum-card" href="#add"><b>New feature = JSON + 3 small Dart edits</b><span>Mobile + web JSON, en/ar keys, <code>pubspec.yaml</code>, a route file, 2 lines in the router, and a visible entry tile.</span></a>
+      <a class="sum-card" href="#folders"><b>Web has no fallback</b><span>Tablet falls back to mobile. Web does not: every screen needs a file in <code>sdui_assets/web/</code>.</span></a>
+      <a class="sum-card" href="#revamp"><b>Revamp checklist</b><span>The last chapter: every step and every file to touch when you move an old component to Flutter.</span></a>
   </div>
   <div class="sum-strip">
     <div><span class="tag old">old</span><code>loader.js</code> → <code>.js</code> + <code>hooks.js</code> → <code>model.js</code> → <code>baseService</code> → OBDX → Knockout redraws <code>.html</code></div>
@@ -361,8 +364,8 @@ html{scroll-behavior:smooth}
         <li><code>lib/main.dart</code><span>picks the flavor (dev/sit/uat/prod)</span></li>
         <li><code>lib/bootstrap.dart</code><span>security check, Hive, Firebase, registers actions, <code>runApp</code></span></li>
         <li><code>lib/app.dart</code> + <code>core/routing/app_router.dart</code><span>GoRouter shows login, then home</span></li>
-        <li><code>sdui_assets/mobile/apply/apply_main_screen.json</code><span>menu row: <code>navigate</code> to <code>/sdui/iscore/iscore_inquiry</code></span></li>
-        <li><code>sdui_ws/renderer/sdui_screen_loader.dart</code><span>adds <code>mobile/</code>, asks for the screen</span></li>
+        <li><code>sdui_assets/mobile/home/dashboard.json</code><span>NBE Services tile: <code>navigate</code> to <code>/iscore</code></span></li>
+        <li><code>core/routing/routes/iscore_routes.dart</code><span><code>AdaptiveLayout</code> picks <code>mobile/iscore/iscore_inquiry</code> or the <code>web/</code> file → <code>SDUIScreenLoader</code></span></li>
         <li><code>sdui_ws/core/sdui_repository.dart</code><span>reads <code>iscore_inquiry.json</code> (remote → cache → bundled)</span></li>
         <li><code>sdui_ws/core/sdui_screen_orchestrator.dart</code><span>sets <code>$state</code>, runs <code>page.api.onLoad</code></span></li>
         <li><code>core/network/api_service.dart</code> + <code>dio_client.dart</code><span>interceptors add nonce, cookie, 2FA → OBDX</span></li>
@@ -405,7 +408,7 @@ html{scroll-behavior:smooth}
       <li class="fc-row" data-step="2">
         <div class="fc-phase"><span class="fc-num">2</span>Customer opens a feature</div>
         <div class="fc-node fc-old"><b>Menu → loadComponent()</b><span>registerComponent + dashboard.loadComponent('i-score-inquiry').</span></div>
-        <div class="fc-node fc-new"><b>Menu → navigate</b><span>"route": "/sdui/iscore/iscore_inquiry" in the menu JSON.</span></div>
+        <div class="fc-node fc-new"><b>Dashboard tile → navigate</b><span>"route": "/iscore" in dashboard.json (NBE Services row).</span></div>
       </li>
       <li class="fc-row" data-step="3">
         <div class="fc-phase"><span class="fc-num">3</span>Find the screen</div>
@@ -458,7 +461,7 @@ html{scroll-behavior:smooth}
     <div class="box"><h3>Flutter</h3><p>Google's UI framework written in Dart. One codebase builds Android, iOS and Web. It plays the role of Oracle JET.</p></div>
     <div class="box"><h3>Widget</h3><p>Everything on screen is a widget: <code>Text</code>, <code>Row</code>, <code>Column</code>, <code>Button</code>. Widgets nest inside each other like HTML tags. A widget is like a JET <code>oj-*</code> element.</p></div>
     <div class="box"><h3>Riverpod</h3><p>Holds app state and shares it between screens (the "providers"). Plays the role of Knockout observables plus <code>baseModel</code>.</p></div>
-    <div class="box"><h3>GoRouter</h3><p>Navigation by URL path, like <code>/accounts</code> or <code>/sdui/iscore/iscore_inquiry</code>. Replaces <code>dashboard.loadComponent</code>.</p></div>
+    <div class="box"><h3>GoRouter</h3><p>Navigation by URL path, like <code>/accounts</code> or <code>/iscore</code>. Replaces <code>dashboard.loadComponent</code>.</p></div>
     <div class="box"><h3>Dio</h3><p>The HTTP client. Plays the role of <code>baseService.fetch / add</code>, with interceptors for nonce, cookies, 2FA and errors.</p></div>
   </div>
   <div class="note"><b>The big twist: SDUI.</b> In a normal Flutter app, every screen is a Dart file. This team built a <b>Server-Driven UI</b> engine instead: screens are JSON files, and Dart code reads the JSON and builds the widgets. So most of your daily work is JSON, not Dart.</div>
@@ -637,7 +640,7 @@ html{scroll-behavior:smooth}
     <div class="wire-col new">
       <span class="tag new">New Flutter · one JSON file</span>
       <ol class="wire">
-        <li><div class="w-node"><b>Route</b><span><code>/sdui/iscore/iscore_inquiry</code> → <code>SDUIScreenLoader</code> (replaces loader.js).</span></div><div class="w-edge">loads ↓</div></li>
+        <li><div class="w-node"><b>Route</b><span><code>/iscore</code> in <code>iscore_routes.dart</code> → <code>SDUIScreenLoader</code> (replaces loader.js).</span></div><div class="w-edge">loads ↓</div></li>
         <li><div class="w-node"><b>iscore_inquiry.json</b><span>One file holds what html + js + model did. Found remote → cache → bundled.</span></div><div class="w-edge">checked by ↓</div></li>
         <li><div class="w-node"><b>sdui_document_validator</b><span>Checks the JSON shape, then the engine reads each block.</span></div><div class="w-edge">splits into ↓</div></li>
         <li><div class="w-node"><b>"state"</b><span>Starting values → <code>$state</code> (the old observables).</span></div><div class="w-edge">becomes ↓</div></li>
@@ -684,6 +687,7 @@ html{scroll-behavior:smooth}
         <li><code>mobile/</code> 173 screens (phones)</li>
         <li><code>web/</code> 129 screens (desktop)</li>
         <li><code>tablet/</code> optional; falls back to mobile</li>
+        <li><b>No web fallback:</b> each screen needs a <code>web/</code> file too</li>
         <li><code>common/theme</code> colors, type, spacing</li>
         <li><code>common/translations</code> en / ar</li>
         <li><code>common/overlays</code> shared sheets</li>
@@ -767,11 +771,11 @@ html{scroll-behavior:smooth}
           <text x="30" y="24" font-size="12" font-weight="600" style="font-family:var(--mono);fill:var(--green)">LOAD THE SCREEN</text>
           <rect x="30" y="38" width="320" height="52" rx="9" stroke="currentColor" style="fill:var(--panel)"/>
           <text x="46" y="60" font-weight="600" fill="currentColor">GoRouter</text>
-          <text x="46" y="78" font-size="11.5" style="fill:var(--muted);font-family:var(--mono)">/sdui/iscore/iscore_inquiry</text>
+          <text x="46" y="78" font-size="11.5" style="fill:var(--muted);font-family:var(--mono)">/iscore  (iscore_routes.dart)</text>
 
           <rect x="30" y="118" width="320" height="52" rx="9" stroke="currentColor" style="fill:var(--panel)"/>
           <text x="46" y="140" font-weight="600" fill="currentColor">SDUIScreenLoader</text>
-          <text x="46" y="158" font-size="11.5" style="fill:var(--muted)">adds mobile/ or web/ by screen width</text>
+          <text x="46" y="158" font-size="11.5" style="fill:var(--muted)">AdaptiveLayout picks the mobile or web file</text>
 
           <rect x="30" y="198" width="320" height="86" rx="9" stroke="currentColor" style="fill:var(--panel)"/>
           <text x="46" y="220" font-weight="600" fill="currentColor">SDUIRepository · finds the JSON</text>
@@ -866,7 +870,7 @@ html{scroll-behavior:smooth}
         <span class="k">"url"</span>: <span class="s">"/digx/v1/cz/iscore"</span>,
         <span class="k">"body"</span>: { <span class="k">"language"</span>: <span class="s">"$data.language"</span> },      <span class="pin">7</span>
         <span class="k">"onSuccess"</span>: { <span class="k">"type"</span>: <span class="s">"navigate"</span>,
-          <span class="k">"route"</span>: <span class="s">"/sdui/iscore/iscore_success"</span>,
+          <span class="k">"route"</span>: <span class="s">"/iscore/success"</span>,
           <span class="k">"argument"</span>: { <span class="k">"ref"</span>: <span class="s">"$data.iscoreRequest.iscoreDTO.id"</span> } }
       }
     }
@@ -945,7 +949,7 @@ html{scroll-behavior:smooth}
 <span class="k">"action"</span>: { <span class="k">"type"</span>: <span class="s">"conditional"</span>,
   <span class="k">"when"</span>: { <span class="k">"operator"</span>: <span class="s">"notEquals"</span>, <span class="k">"left"</span>: <span class="s">"$state.fromAccountDTO.currencyCode"</span>, <span class="k">"right"</span>: <span class="s">"EGP"</span> },
   <span class="k">"then"</span>: [ { <span class="k">"type"</span>: <span class="s">"showErrorDialog"</span>, <span class="k">"message"</span>: <span class="s">"iscoreDebitAccountEgpOnly"</span> } ],
-  <span class="k">"else"</span>: [ { <span class="k">"type"</span>: <span class="s">"navigate"</span>, <span class="k">"route"</span>: <span class="s">"/sdui/iscore/iscore_review"</span> } ] }</code></pre>
+  <span class="k">"else"</span>: [ { <span class="k">"type"</span>: <span class="s">"navigate"</span>, <span class="k">"route"</span>: <span class="s">"/iscore/review"</span> } ] }</code></pre>
   </div>
   </details>
 </section>
@@ -1106,7 +1110,7 @@ html{scroll-behavior:smooth}
         <tr><td>Login action handlers</td><td><code>login_screen_controller.dart</code></td><td><code>preMobileLogin</code>, <code>oaamLogin</code> custom actions (the screens are SDUI)</td></tr>
         <tr><td>First-time login</td><td><code>first_time_login_screen_controller.dart</code></td><td>Force-change password, security image, phrases</td></tr>
         <tr><td>Loans, CDs, self-registration</td><td><code>features/loans</code>, <code>certificates_and_deposits</code>, <code>self_registration</code></td><td>Thin Dart wrappers that load SDUI screens</td></tr>
-        <tr><td>Cards, payments, more</td><td><code>features/cards</code>, <code>payments</code>, <code>more</code></td><td>"Coming soon" placeholders today</td></tr>
+        <tr><td>Apply, cards, payments, more</td><td><code>features/apply</code>, <code>cards</code>, <code>payments</code>, <code>more</code></td><td>"Coming soon" placeholders today. Don't add entry points there: customers can't see them.</td></tr>
         <tr><td>Device security</td><td><code>app_security/</code></td><td>Jailbreak check, screenshot blocking, idle timeout</td></tr>
       </tbody>
     </table>
@@ -1121,22 +1125,23 @@ html{scroll-behavior:smooth}
   <div class="head">
     <span class="eyebrow">Chapter 18</span>
     <h2>Adding a feature, start to finish</h2>
-    <p class="take"><span>In one line</span>New feature = JSON screens + translations + one pubspec line. No Dart.</p>
-    <p>Using iScore as the example. No Dart changes needed.</p>
+    <p class="take"><span>In one line</span>New feature = mobile + web JSON, translations, pubspec, one route file, two router lines, and a visible entry tile.</p>
+    <p>Using iScore as the example. The full file-by-file checklist is in the <a href="#revamp">last chapter</a>.</p>
   </div>
   <div class="toggle" role="group" aria-label="Compare">
     <button type="button" id="t-new" aria-pressed="true">New Flutter way</button>
     <button type="button" id="t-old" aria-pressed="false">Old OBDX way</button>
   </div>
   <ol class="steps" id="steps-new">
-    <li><div><b>Find the API contract</b>From the old <code>model.js</code>: URLs, methods, payload, response fields.</div></li>
-    <li><div><b>Copy a similar flow</b>Start from <code>transfers/own_account/</code> files for form → review → success.</div></li>
-    <li><div><b>Write the screens</b>Create <code>sdui_assets/mobile/iscore/*.json</code>; set each <code>id</code> to its path.</div></li>
-    <li><div><b>Add text</b>Translation keys in <code>en.json</code> + <code>ar.json</code>; T&amp;C HTML in <code>sdui_assets/html/</code>.</div></li>
-    <li><div><b>Register the folder</b>Add <code>- sdui_assets/mobile/iscore/</code> to <code>pubspec.yaml</code>.</div></li>
-    <li><div><b>Link from a menu</b><code>navigate</code> to <code>/sdui/iscore/iscore_inquiry</code>. The generic route needs no Dart.</div></li>
-    <li><div><b>Repeat for web</b>Same files under <code>sdui_assets/web/iscore/</code> with a desktop layout.</div></li>
-    <li><div><b>Run and test</b><code>flutter pub get</code> → full restart → test on SIT, in English and Arabic.</div></li>
+    <li><div><b>Read the old component</b>From <code>extensions/components/iscore/</code>: model.js (APIs, task code), .js + hooks.js (rules), .html (fields), nls (texts).</div></li>
+    <li><div><b>Copy a finished flow</b>Start from <code>transfers/own_account/</code> or <code>wealth/</code> for form → review → success.</div></li>
+    <li><div><b>Write mobile screens</b><code>sdui_assets/mobile/iscore/*.json</code>; each <code>id</code> equals its path.</div></li>
+    <li><div><b>Write web screens</b><code>sdui_assets/web/iscore/*.json</code>: <code>webScreen</code> pages, <code>dialog</code> sheets.</div></li>
+    <li><div><b>Add texts</b>Keys in <code>en.json</code> + <code>ar.json</code>; T&amp;C HTML in <code>sdui_assets/html/</code>.</div></li>
+    <li><div><b>Register folders</b>Both folders in <code>pubspec.yaml</code>.</div></li>
+    <li><div><b>Add routes</b><code>route_names.dart</code> + <code>routes/iscore_routes.dart</code> + import and branch in <code>app_router.dart</code>.</div></li>
+    <li><div><b>Add the entry tile</b>NBE Services row in both <code>dashboard.json</code> files.</div></li>
+    <li><div><b>Run and test</b><code>flutter pub get</code> → full restart → test mobile + web, English + Arabic, on SIT.</div></li>
   </ol>
   <ol class="steps" id="steps-old" hidden>
     <li><div><b>Create the component folder</b><code>extensions/components/iscore/i-score-inquiry/</code>.</div></li>
@@ -1166,6 +1171,10 @@ html{scroll-behavior:smooth}
     <dt>Action plugin</dt><dd>Dart class that runs one action type (<code>api</code>, <code>navigate</code>…).</dd>
     <dt>Orchestrator</dt><dd>Prepares a screen: resets state, merges incoming data, runs onLoad APIs.</dd>
     <dt>Overlay</dt><dd>A bottom sheet or dialog. Shares its parent screen's state.</dd>
+    <dt>Route file</dt><dd>A Dart file in <code>core/routing/routes/</code> that maps URL paths to the mobile and web JSON of one feature.</dd>
+    <dt>restore</dt><dd><code>"page.restore": {"mode": "never", "fallback": "/iscore"}</code>: on a web refresh of a mid-flow screen, go back to the start.</dd>
+    <dt>Task code</dt><dd>OBDX permission code of a transaction (iScore = <code>PC_F_ISC</code>). Pass it in the accounts call so the server returns only allowed accounts.</dd>
+    <dt>componentName</dt><dd>Optional JSON key that hides a widget when the user isn't entitled to that component (from <code>me/components</code>).</dd>
     <dt>Provider</dt><dd>A Riverpod object that holds state; widgets that read it redraw when it changes.</dd>
     <dt>Interceptor</dt><dd>A Dio hook that runs on every request/response (nonce, cookies, 2FA, errors).</dd>
     <dt>Hive</dt><dd>Small local database on the phone; caches screen JSON and HTML.</dd>
@@ -1176,6 +1185,110 @@ html{scroll-behavior:smooth}
   </div>
   </details>
 </section>
+<!-- ============ REVAMP CHECKLIST ============ -->
+<section id="revamp">
+  <div class="head">
+    <span class="eyebrow">Chapter 20</span>
+    <h2>Revamp checklist: move any old component to Flutter</h2>
+    <p class="take"><span>In one line</span>Read the old component, write mobile + web JSON, add texts, register folders, add a route file, wire the router, add a visible entry tile, then test.</p>
+    <p>Follow these steps in order for every component. <code>&lt;feature&gt;</code> means your folder name, like <code>iscore</code>; <code>&lt;Feature&gt;</code> means the same name in code, like <code>Iscore</code>.</p>
+  </div>
+
+  <h3>Part A: read the old component first</h3>
+  <div class="note"><b>Always start in <code>extensions/</code>.</b> NBE's overrides live in <code>extensions/components/</code> and win over <code>components/</code>. Open the base folder only if the component has no override. NBE-only features like iScore exist only in <code>extensions/</code>.</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Old file</th><th>What to take from it</th><th>Goes to</th></tr></thead>
+      <tbody>
+        <tr><td><code>model.js</code></td><td>Every URL, method, version, query and body field, and the <b>task code</b>. Copy field names exactly, typos included.</td><td><code>page.api.onLoad</code>, <code>api</code> / <code>downloadFile</code> actions</td></tr>
+        <tr><td><code>&lt;name&gt;.js</code> + <code>hooks.js</code></td><td>Business rules: required fields, currency limits, filters (<code>enable === "Y"</code>), stages (CREATE → REVIEW), what happens on success.</td><td><code>conditional</code> actions, <code>enabled</code> expressions, separate screens per stage</td></tr>
+        <tr><td><code>&lt;name&gt;.html</code></td><td>Fields, shared tags (<code>account-input task-code=…</code>), popups (<code>modal-window</code>), buttons (Submit, Cancel, Back).</td><td><code>layout</code>, sheet JSON files</td></tr>
+        <tr><td><code>resources/nls/</code> + <code>nls/ar/</code></td><td>Every label in English and Arabic.</td><td><code>en.json</code>, <code>ar.json</code></td></tr>
+        <tr><td><code>partials/help/</code> + <code>help/ar/</code></td><td>T&amp;C, charges, help pages.</td><td><code>sdui_assets/html/</code></td></tr>
+        <tr><td><code>partials/confirm-screen/</code></td><td>What the success screen shows (references, download link, follow-up links).</td><td><code>*_success.json</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Part B: build it in Flutter</h3>
+  <ol class="steps">
+    <li><div><b>Plan the screens</b>One JSON per stage (form, review, success, history). One JSON per popup (account picker, list picker, T&amp;C). Copy the closest finished flow: <code>transfers/own_account/</code> or <code>wealth/</code>.</div></li>
+    <li><div><b>Write the mobile screens</b>In <code>sdui_assets/mobile/&lt;feature&gt;/</code>. Each <code>"id"</code> must equal the path, like <code>mobile/iscore/iscore_review</code>. Pages use <code>"type": "screen"</code>, sheets use <code>"type": "bottomSheet"</code>.</div></li>
+    <li><div><b>Write the web screens</b>Same files in <code>sdui_assets/web/&lt;feature&gt;/</code> with ids <code>web/…</code>. Pages use <code>"type": "webScreen"</code> + <code>"webAppBarTitle"</code>; sheets use <code>"type": "dialog"</code>; <code>openOverlay</code> uses <code>"presentation": "dialog"</code>. Web has no fallback, so skipping this breaks web.</div></li>
+    <li><div><b>Connect the screens</b><code>navigate</code> with <code>"route"</code> = the named route (like <code>/iscore/review</code>), <code>"screenId"</code> = the same platform's file, and <code>"argument"</code> for data. Add <code>"page.restore": {"mode": "never", "fallback": "/&lt;feature&gt;"}</code> to review and success screens. Use <code>"replace": true</code> when going to success.</div></li>
+    <li><div><b>Load accounts like the old tag did</b>Replace <code>account-input</code> with <code>onLoad</code> → <code>/digx/v1/accounts/demandDeposit?taskCode=&lt;TASK_CODE&gt;</code> plus a list sheet. Keep the same task code.</div></li>
+    <li><div><b>Use the theme</b>Colors by role (<code>primary</code>, <code>on-surface:0.6</code>, <code>outline</code>), typography names (<code>labelSmall</code>), spacing <code>$tokens.spacing.m</code>, radius <code>$tokens.radius.xxl</code>. No hex colors or raw font sizes.</div></li>
+    <li><div><b>Add the texts</b>Prefix every key with the feature (<code>iscoreLanguage</code>). Add each key to both <code>en.json</code> and <code>ar.json</code>. Reuse existing keys (<code>continue</code>, <code>confirm</code>, <code>cancel</code>, <code>done</code>).</div></li>
+    <li><div><b>Add HTML pages</b><code>sdui_assets/html/&lt;name&gt;_en.html</code> + <code>_ar.html</code> (with <code>dir="rtl"</code>), shown with <code>SecureWebView</code>.</div></li>
+    <li><div><b>Register the folders</b>In <code>pubspec.yaml</code> under <code>flutter → assets</code>, add both <code>sdui_assets/mobile/&lt;feature&gt;/</code> and <code>sdui_assets/web/&lt;feature&gt;/</code>. Never list a folder that doesn't exist.</div></li>
+    <li><div><b>Add the route names</b>In <code>lib/core/routing/route_names.dart</code>: <code>&lt;feature&gt; = '/&lt;feature&gt;'</code> plus child names (<code>'review'</code>, <code>'success'</code>…).</div></li>
+    <li><div><b>Create the route file</b><code>lib/core/routing/routes/&lt;feature&gt;_routes.dart</code> with <code>get&lt;Feature&gt;Routes()</code>. Each route uses <code>AdaptiveLayout</code>: mobile and tablet → <code>mobile/…</code>, desktop → <code>web/…</code>. Child routes use <code>parentNavigatorKey: kIsWeb ? null : rootNavigatorKey</code>. Copy <code>iscore_routes.dart</code>.</div></li>
+    <li><div><b>Wire the router</b>In <code>app_router.dart</code>: import the route file and add <code>StatefulShellBranch(routes: get&lt;Feature&gt;Routes())</code> as the <strong>last</strong> branch, so bottom-nav and sidebar indexes don't change.</div></li>
+    <li><div><b>Add a visible entry point</b>Add a tile or row where customers can see it: the NBE Services row in both <code>dashboard.json</code> files, or an existing SDUI screen. Not the Apply or More tabs (native "Coming soon" screens).</div></li>
+    <li><div><b>Optional: entitlement gating</b>To hide the entry from users without access, add <code>"componentName"</code> with an alias, and map the alias to the API component name in <code>core/auth/component_access_mapping.dart</code>. On the dashboard, the item must also be in the dashboard modules config, or it stays hidden.</div></li>
+  </ol>
+
+  <h3>Every file you touch</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>File</th><th>New / Edit</th><th>What to do</th></tr></thead>
+      <tbody>
+        <tr><td><code>sdui_assets/mobile/&lt;feature&gt;/*.json</code></td><td>New</td><td>Mobile screens and sheets</td></tr>
+        <tr><td><code>sdui_assets/web/&lt;feature&gt;/*.json</code></td><td>New</td><td>Web screens (webScreen) and dialogs</td></tr>
+        <tr><td><code>sdui_assets/html/&lt;name&gt;_en|_ar.html</code></td><td>New</td><td>T&amp;C / charges / help pages, if any</td></tr>
+        <tr><td><code>lib/core/routing/routes/&lt;feature&gt;_routes.dart</code></td><td>New</td><td>Named routes → AdaptiveLayout → SDUIScreenLoader</td></tr>
+        <tr><td><code>sdui_assets/common/translations/en.json</code></td><td>Edit</td><td>Add English keys</td></tr>
+        <tr><td><code>sdui_assets/common/translations/ar.json</code></td><td>Edit</td><td>Add Arabic keys</td></tr>
+        <tr><td><code>pubspec.yaml</code></td><td>Edit</td><td>List both new folders</td></tr>
+        <tr><td><code>lib/core/routing/route_names.dart</code></td><td>Edit</td><td>Route name constants</td></tr>
+        <tr><td><code>lib/core/routing/app_router.dart</code></td><td>Edit</td><td>Import + last shell branch</td></tr>
+        <tr><td><code>sdui_assets/mobile|web/home/dashboard.json</code></td><td>Edit</td><td>Entry tile (or another visible screen)</td></tr>
+        <tr><td><code>lib/core/auth/component_access_mapping.dart</code></td><td>Optional</td><td>Only if you gate the entry with <code>componentName</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Part C: test before you hand it over</h3>
+  <div class="cols">
+    <div class="box">
+      <h3>Run</h3>
+      <ul>
+        <li><code>flutter pub get</code>, then a full restart</li>
+        <li>Phone width and desktop width</li>
+        <li>English and Arabic (right-to-left)</li>
+        <li>Light theme and Platinum theme if you can</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>Compare with the old channel</h3>
+      <ul>
+        <li>Same lists (accounts, LOVs) and same filters</li>
+        <li>Same validation messages and blocked cases</li>
+        <li>Same request body (check the network log)</li>
+        <li>Same success data and downloads</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>Edge cases</h3>
+      <ul>
+        <li>Empty lists and server errors</li>
+        <li>OTP challenge appears when expected</li>
+        <li>Web refresh on review/success returns to start</li>
+        <li>Back button at every step</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Part D: hand it over</h3>
+  <ol class="steps">
+    <li><div><b>Work on your own branch</b>In GitLab, never directly on <code>pre_prod</code>.</div></li>
+    <li><div><b>Review your diff</b><code>git diff</code>: only your feature's lines should change in the shared files.</div></li>
+    <li><div><b>Open a merge request</b>List the new routes, files and the old component it replaces.</div></li>
+  </ol>
+
+  <div class="note"><b>Mistakes this checklist prevents:</b> no web files (web shows an error), an entry point on a "Coming soon" tab (nobody sees it), a missing pubspec folder (screen not found), a listed folder that doesn't exist (build fails), keys added to only one language, and old rules like task codes or LOV filters left out.</div>
+</section>
+
 <footer class="foot">Built from the nbe_flutter workspace (branch pre_prod) and the OBDX channel build PREPROD 13 Oct 2026. Both are internal NBE code: share this page inside the team only.</footer>
 </div>
 <button type="button" id="btn-top" class="to-top" aria-label="Back to top" hidden>↑</button>
